@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/characters/player.tscn" id="1_player"]
+[ext_resource type="PackedScene" path="res://scenes/test/test_interactable.tscn" id="2_test"]
 
 [node name="MovementTest" type="Node2D"]
 
@@ -10,3 +11,6 @@ color = Color(0.12, 0.16, 0.2, 1)
 
 [node name="Player" parent="." instance=ExtResource("1_player")]
 position = Vector2(480, 270)
+
+[node name="TestInteractable" parent="." instance=ExtResource("2_test")]
+position = Vector2(600, 270)
