@@ -2,6 +2,26 @@ extends CharacterBody2D
 
 @export var move_speed: float = 200.0
 
+@onready var interaction_detector: Area2D = $InteractionDetector
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("interact"):
+		interact_with_nearest()
+
+
+func interact_with_nearest() -> void:
+	var nearest: Interactable = null
+	var nearest_distance: float = INF
+	for area in interaction_detector.get_overlapping_areas():
+		if area is Interactable:
+			var distance: float = global_position.distance_squared_to(area.global_position)
+			if distance < nearest_distance:
+				nearest = area
+				nearest_distance = distance
+	if nearest != null:
+		nearest.interact()
+
 
 func _physics_process(_delta: float) -> void:
 	var direction: Vector2 = Input.get_vector("move_left", "move_right", "move_up", "move_down")

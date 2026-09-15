@@ -11,11 +11,19 @@ Read `docs/GAME_DESIGN.md` before making game-design or architectural decisions.
 - Godot 4.7
 - GDScript
 - 2D
-- VScode
-- Git / Github
+- VS Code
+- Git / GitHub
 - Aseprite
 
 Do not introduce another engine, language, framework, or major dependency unless explicitly requested.
+
+## Platform Direction
+
+- PC is the primary development target.
+- Keep gameplay systems input-device independent where practical.
+- Use Godot Input Map actions instead of hard-coding keyboard or mouse inputs into gameplay logic.
+- Avoid unnecessary assumptions about a fixed screen resolution or aspect ratio.
+- Keep future mobile support possible, but do not implement mobile-specific controls, UI, or platform systems unless explicitly requested.
 
 ## Development Philosophy
 
@@ -25,13 +33,13 @@ Do not over-engineer systems for hypothetical future requirements.
 
 Build the smallest working version of a feature first, then expand it when needed.
 
-DO not implement features simply because they appear in the game design document. Only implement the feature that was currently requested.
+DO not implement features simply because they appear in the game design document. Only implement the feature that is currently requested.
 
 ## Before Making Changes
 
 Before implementing a feature:
 
-1. Inspect the relevant exisiting files.
+1. Inspect the relevant existing files.
 2. Understand the current project structure.
 3. Reuse existing systems when appropriate.
 4. Make the smallest reasonable change.
@@ -54,7 +62,7 @@ General structure:
 
 Create subfolders only when they are actually needed.
 
-Do nto place large numbers of unrelated files in the project root.
+Do not place large numbers of unrelated files in the project root.
 
 ## Godot
 
