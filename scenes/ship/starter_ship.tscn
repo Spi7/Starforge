@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/corner_right_32x48.png" id="4_frpf8"]
 [ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/wall_left_32x32.png" id="5_3xu7g"]
 [ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/wall_right_32x32.png" id="6_q0ep1"]
-[ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/cockpit_window_96x48.png" id="7_e4i06"]
+[ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/bridge_window_160x64.png" id="7_e4i06"]
 [ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/wall_light_32x16.png" id="8_uoo04"]
 [ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/airlock_64x64.png" id="9_3j4d2"]
 [ext_resource type="PackedScene" path="res://scenes/ship/ship_console.tscn" id="10_rrrbu"]
@@ -21,6 +21,18 @@
 [ext_resource type="Resource" path="res://data/items/copper_ore.tres" id="18_copper"]
 [ext_resource type="Resource" path="res://data/items/nutrient_pack.tres" id="19_nutrient"]
 [ext_resource type="Resource" path="res://data/items/basic_mining_tool.tres" id="20_tool"]
+
+[ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/pilot_chair_32x48.png" id="21_chair"]
+[ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/bulkhead_door_left_locked_32x64.png" id="22_left_door"]
+[ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/bulkhead_door_right_locked_32x64.png" id="23_right_door"]
+[ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/module_stub_left_64x96.png" id="24_left_stub"]
+[ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/module_stub_right_64x96.png" id="25_right_stub"]
+[ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/wall_vent_32x32.png" id="26_vent"]
+[ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/hull_pipe_run_64x32.png" id="27_pipe"]
+[ext_resource type="Script" path="res://scripts/ship/space_backdrop.gd" id="28_backdrop"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_chair"]
+size = Vector2(20, 12)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ev5ja"]
 size = Vector2(320, 48)
@@ -52,6 +64,21 @@ size = Vector2(12, 10)
 [node name="StarterShip" type="Node2D" unique_id=1797421891]
 texture_filter = 1
 position = Vector2(320, 160)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(160, 112)
+
+[node name="SpaceBackdrop" type="CanvasLayer" parent="."]
+layer = -1
+
+[node name="Stars" type="Control" parent="SpaceBackdrop"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("28_backdrop")
 
 [node name="Floor" type="TileMapLayer" parent="." unique_id=924041257]
 tile_map_data = PackedByteArray("AAABAAAAAAAAAAAAAAACAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAFAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAHAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAABAAEAAAAAAAAAAAACAAEAAAAAAAAAAAADAAEAAAAAAAAAAAAEAAEAAgAAAAAAAAAFAAEAAgAAAAAAAAAGAAEAAAAAAAAAAAAHAAEAAAAAAAAAAAAIAAEAAAAAAAAAAAAJAAEAAAAAAAAAAAAAAAIAAAAAAAAAAAABAAIAAAAAAAAAAAACAAIAAAAAAAAAAAADAAIAAAAAAAAAAAAEAAIAAAAAAAAAAAAFAAIAAAAAAAAAAAAGAAIAAAAAAAAAAAAHAAIAAAAAAAAAAAAIAAIAAAAAAAAAAAAJAAIAAAAAAAAAAAAAAAMAAAAAAAAAAAABAAMAAQAAAAAAAAACAAMAAAAAAAAAAAADAAMAAAAAAAAAAAAEAAMAAAAAAAAAAAAFAAMAAAAAAAAAAAAGAAMAAAAAAAAAAAAHAAMAAAAAAAAAAAAIAAMAAAAAAAAAAAAJAAMAAAAAAAAAAAAAAAQAAAAAAAAAAAABAAQAAAAAAAAAAAACAAQAAAAAAAAAAAADAAQAAAAAAAAAAAAEAAQAAAAAAAAAAAAFAAQAAAAAAAAAAAAGAAQAAAAAAAAAAAAHAAQAAAAAAAAAAAAIAAQAAQAAAAAAAAAJAAQAAAAAAAAAAAAAAAUAAAAAAAAAAAABAAUAAAAAAAAAAAACAAUAAAAAAAAAAAADAAUAAAAAAAAAAAAEAAUAAAAAAAAAAAAFAAUAAAAAAAAAAAAGAAUAAAAAAAAAAAAHAAUAAAAAAAAAAAAIAAUAAAAAAAAAAAAJAAUAAAAAAAAAAAACAAYAAAAAAAAAAAADAAYAAAAAAAAAAAAEAAYAAgAAAAAAAAAFAAYAAgAAAAAAAAAGAAYAAAAAAAAAAAAHAAYAAAAAAAAAAAA=")
@@ -150,24 +177,14 @@ position = Vector2(320, 64)
 texture = ExtResource("6_q0ep1")
 centered = false
 
-[node name="LeftWall3" type="Sprite2D" parent="BackgroundStructure/UpperAndSideWalls" unique_id=476042474]
+[node name="LeftLockedDoor" type="Sprite2D" parent="BackgroundStructure/UpperAndSideWalls"]
 position = Vector2(-32, 96)
-texture = ExtResource("5_3xu7g")
+texture = ExtResource("22_left_door")
 centered = false
 
-[node name="RightWall3" type="Sprite2D" parent="BackgroundStructure/UpperAndSideWalls" unique_id=1332279100]
+[node name="RightLockedDoor" type="Sprite2D" parent="BackgroundStructure/UpperAndSideWalls"]
 position = Vector2(320, 96)
-texture = ExtResource("6_q0ep1")
-centered = false
-
-[node name="LeftWall4" type="Sprite2D" parent="BackgroundStructure/UpperAndSideWalls" unique_id=993772583]
-position = Vector2(-32, 128)
-texture = ExtResource("5_3xu7g")
-centered = false
-
-[node name="RightWall4" type="Sprite2D" parent="BackgroundStructure/UpperAndSideWalls" unique_id=1449554007]
-position = Vector2(320, 128)
-texture = ExtResource("6_q0ep1")
+texture = ExtResource("23_right_door")
 centered = false
 
 [node name="LeftWall5" type="Sprite2D" parent="BackgroundStructure/UpperAndSideWalls" unique_id=158821258]
@@ -181,15 +198,50 @@ texture = ExtResource("6_q0ep1")
 centered = false
 
 [node name="CockpitWindow" type="Sprite2D" parent="BackgroundStructure" unique_id=978576381]
-position = Vector2(112, -44)
+position = Vector2(80, -64)
 texture = ExtResource("7_e4i06")
 centered = false
 
 [node name="WallDetails" type="Node2D" parent="BackgroundStructure" unique_id=2036693458]
 
 [node name="CockpitLight" type="Sprite2D" parent="BackgroundStructure/WallDetails" unique_id=50456293]
-position = Vector2(64, -34)
+position = Vector2(40, -34)
 texture = ExtResource("8_uoo04")
+centered = false
+
+[node name="RightCockpitLight" type="Sprite2D" parent="BackgroundStructure/WallDetails"]
+position = Vector2(248, -34)
+texture = ExtResource("8_uoo04")
+centered = false
+
+[node name="LeftModuleStub" type="Sprite2D" parent="BackgroundStructure"]
+position = Vector2(-96, 80)
+texture = ExtResource("24_left_stub")
+centered = false
+
+[node name="RightModuleStub" type="Sprite2D" parent="BackgroundStructure"]
+position = Vector2(352, 80)
+texture = ExtResource("25_right_stub")
+centered = false
+
+[node name="LeftVent" type="Sprite2D" parent="BackgroundStructure/WallDetails"]
+position = Vector2(-32, 160)
+texture = ExtResource("26_vent")
+centered = false
+
+[node name="RightVent" type="Sprite2D" parent="BackgroundStructure/WallDetails"]
+position = Vector2(320, 160)
+texture = ExtResource("26_vent")
+centered = false
+
+[node name="LeftRearPipes" type="Sprite2D" parent="BackgroundStructure/WallDetails"]
+position = Vector2(48, 256)
+texture = ExtResource("27_pipe")
+centered = false
+
+[node name="RightRearPipes" type="Sprite2D" parent="BackgroundStructure/WallDetails"]
+position = Vector2(208, 256)
+texture = ExtResource("27_pipe")
 centered = false
 
 [node name="Airlock" type="Sprite2D" parent="BackgroundStructure" unique_id=1591324858]
@@ -240,6 +292,20 @@ position = Vector2(160, 24)
 
 [node name="Crate" parent="WorldObjects" instance=ExtResource("11_t0orf")]
 position = Vector2(48, 104)
+
+[node name="PilotChair" type="StaticBody2D" parent="WorldObjects"]
+y_sort_enabled = true
+position = Vector2(160, 64)
+collision_mask = 0
+
+[node name="Sprite2D" type="Sprite2D" parent="WorldObjects/PilotChair"]
+position = Vector2(0, 20)
+offset = Vector2(0, -20)
+texture = ExtResource("21_chair")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldObjects/PilotChair"]
+position = Vector2(0, 14)
+shape = SubResource("RectangleShape2D_chair")
 
 [node name="Plant" type="StaticBody2D" parent="WorldObjects" unique_id=1346816060]
 y_sort_enabled = true
@@ -335,12 +401,12 @@ texture = ExtResource("15_f33up")
 centered = false
 
 [node name="IronPickup" parent="WorldObjects" instance=ExtResource("16_pickup")]
-position = Vector2(104, 76)
+position = Vector2(88, 76)
 item = ExtResource("17_iron")
 quantity = 120
 
 [node name="CopperPickup" parent="WorldObjects" instance=ExtResource("16_pickup")]
-position = Vector2(216, 76)
+position = Vector2(232, 76)
 item = ExtResource("18_copper")
 quantity = 30
 
