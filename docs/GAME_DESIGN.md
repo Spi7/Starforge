@@ -113,6 +113,17 @@ Possible rooms include:
 The ship should visibly expand and become more capable as the player
 progresses.
 
+### Ship Expansion and Customization
+
+- The player cannot freely build or modify the structural boundaries of the spaceship.
+- Walls, exterior borders, corridors, and permanent room layouts are predefined by ship progression.
+- Upgrading the spaceship expands the playable interior by unlocking new rooms or previously inaccessible areas.
+- New areas may be revealed through locked doors, corridors, or ship expansions as the ship level increases.
+- Ship upgrades provide the structural space, but the player can customize unlocked areas with furniture, decorations, machines, storage, plants, and other placeable objects.
+- Credits and resources can be used to purchase or obtain these interior objects.
+- Some placeable objects are cosmetic, while others provide gameplay functions.
+- The goal is to give the player ownership over the interior without turning Starforge into a free-form base-building game.
+
 ---
 
 ## 6. Resource Gathering
@@ -253,6 +264,8 @@ The first vertical slice should focus on proving the core foundation:
 - Basic production
 - Basic UI
 - Save / Load foundation
+
+- The first spaceship prototype represents the Level 1 starter ship: a small predefined interior with basic walls, floor, props, and room boundaries. Ship expansion and free furniture placement are not part of the initial prototype.
 
 After the foundation works, systems such as farming, mining, trading,
 combat, crew, research, and ship expansion can be introduced gradually.

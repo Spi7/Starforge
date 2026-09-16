@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/ship/ship_console.gd" id="1_console"]
+[ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/console_64x48.png" id="2_texture"]
+[ext_resource type="PackedScene" path="res://scenes/interactions/interactable.tscn" id="3_interactable"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_console"]
+size = Vector2(52, 16)
+
+[node name="ShipConsole" type="Node2D"]
+y_sort_enabled = true
+script = ExtResource("1_console")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, 19)
+offset = Vector2(0, -19)
+texture = ExtResource("2_texture")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(0, 11)
+shape = SubResource("RectangleShape2D_console")
+
+[node name="Interactable" parent="." instance=ExtResource("3_interactable")]
+position = Vector2(0, 20)
+
+[connection signal="interacted" from="Interactable" to="." method="_on_interacted"]

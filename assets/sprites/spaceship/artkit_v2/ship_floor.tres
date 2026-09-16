@@ -1,0 +1,26 @@
+[gd_resource type="TileSet" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/floor_panel_a_32x32.png" id="1_1ifxp"]
+[ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/floor_panel_b_32x32.png" id="2_0ihlg"]
+[ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/floor_service_32x32.png" id="3_cel8b"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_slool"]
+texture = ExtResource("1_1ifxp")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_54d8e"]
+texture = ExtResource("2_0ihlg")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pi0er"]
+texture = ExtResource("3_cel8b")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+
+[resource]
+tile_size = Vector2i(32, 32)
+sources/0 = SubResource("TileSetAtlasSource_slool")
+sources/1 = SubResource("TileSetAtlasSource_54d8e")
+sources/2 = SubResource("TileSetAtlasSource_pi0er")
