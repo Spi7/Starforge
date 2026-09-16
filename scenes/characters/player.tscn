@@ -9,10 +9,13 @@ size = Vector2(24, 24)
 radius = 48.0
 
 [node name="Player" type="CharacterBody2D"]
+y_sort_enabled = true
 motion_mode = 1
 script = ExtResource("1_player")
 
 [node name="Placeholder" type="Polygon2D" parent="."]
+position = Vector2(0, 12)
+offset = Vector2(0, -12)
 polygon = PackedVector2Array(-12, -12, 12, -12, 12, 12, -12, 12)
 color = Color(0.3, 0.8, 1, 1)
 
