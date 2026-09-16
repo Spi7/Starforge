@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/item_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"copper_ore"
+display_name = "Copper Ore"
+description = "Prototype raw copper resource."
+max_stack = 99
+category = 0

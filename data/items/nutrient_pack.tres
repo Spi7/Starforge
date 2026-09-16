@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/item_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"nutrient_pack"
+display_name = "Nutrient Pack"
+description = "Prototype consumable. Use effects are not implemented."
+max_stack = 20
+category = 1

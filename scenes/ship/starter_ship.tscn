@@ -10,11 +10,17 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/wall_light_32x16.png" id="8_uoo04"]
 [ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/airlock_64x64.png" id="9_3j4d2"]
 [ext_resource type="PackedScene" path="res://scenes/ship/ship_console.tscn" id="10_rrrbu"]
-[ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/storage_crate_32x32.png" id="11_t0orf"]
+[ext_resource type="PackedScene" path="res://scenes/ship/ship_storage.tscn" id="11_t0orf"]
 [ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/plant_32x48.png" id="12_jt2ml"]
 [ext_resource type="PackedScene" path="res://scenes/characters/player.tscn" id="13_qaw0k"]
 [ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/wall_bottom_32x48.png" id="14_mr71h"]
 [ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/wall_panel_32x32.png" id="15_f33up"]
+
+[ext_resource type="PackedScene" path="res://scenes/items/world_pickup.tscn" id="16_pickup"]
+[ext_resource type="Resource" path="res://data/items/iron_ore.tres" id="17_iron"]
+[ext_resource type="Resource" path="res://data/items/copper_ore.tres" id="18_copper"]
+[ext_resource type="Resource" path="res://data/items/nutrient_pack.tres" id="19_nutrient"]
+[ext_resource type="Resource" path="res://data/items/basic_mining_tool.tres" id="20_tool"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ev5ja"]
 size = Vector2(320, 48)
@@ -39,9 +45,6 @@ size = Vector2(96, 80)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_h1hb2"]
 size = Vector2(192, 64)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_ucknx"]
-size = Vector2(28, 18)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qc3xq"]
 size = Vector2(12, 10)
@@ -235,18 +238,8 @@ y_sort_enabled = true
 [node name="ShipConsole" parent="WorldObjects" unique_id=1391585459 instance=ExtResource("10_rrrbu")]
 position = Vector2(160, 24)
 
-[node name="Crate" type="StaticBody2D" parent="WorldObjects" unique_id=2031577157]
-y_sort_enabled = true
+[node name="Crate" parent="WorldObjects" instance=ExtResource("11_t0orf")]
 position = Vector2(48, 104)
-
-[node name="Sprite2D" type="Sprite2D" parent="WorldObjects/Crate" unique_id=430647970]
-position = Vector2(0, 14)
-texture = ExtResource("11_t0orf")
-offset = Vector2(0, -14)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldObjects/Crate" unique_id=627654670]
-position = Vector2(0, 5)
-shape = SubResource("RectangleShape2D_ucknx")
 
 [node name="Plant" type="StaticBody2D" parent="WorldObjects" unique_id=1346816060]
 y_sort_enabled = true
@@ -340,3 +333,23 @@ centered = false
 position = Vector2(208, 230)
 texture = ExtResource("15_f33up")
 centered = false
+
+[node name="IronPickup" parent="WorldObjects" instance=ExtResource("16_pickup")]
+position = Vector2(104, 76)
+item = ExtResource("17_iron")
+quantity = 120
+
+[node name="CopperPickup" parent="WorldObjects" instance=ExtResource("16_pickup")]
+position = Vector2(216, 76)
+item = ExtResource("18_copper")
+quantity = 30
+
+[node name="NutrientPickup" parent="WorldObjects" instance=ExtResource("16_pickup")]
+position = Vector2(104, 164)
+item = ExtResource("19_nutrient")
+quantity = 5
+
+[node name="ToolPickup" parent="WorldObjects" instance=ExtResource("16_pickup")]
+position = Vector2(216, 164)
+item = ExtResource("20_tool")
+quantity = 1
