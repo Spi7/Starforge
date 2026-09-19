@@ -1,5 +1,7 @@
 [gd_scene format=4]
 
+[ext_resource type="PackedScene" path="res://scenes/interactions/interactable.tscn" id="transition_interactable"]
+
 [ext_resource type="TileSet" path="res://assets/sprites/spaceship/artkit_v2/ship_floor.tres" id="1_jcld4"]
 [ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/wall_top_32x48.png" id="2_mwilf"]
 [ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/corner_left_32x48.png" id="3_c3xv0"]
@@ -12,7 +14,6 @@
 [ext_resource type="PackedScene" path="res://scenes/ship/ship_console.tscn" id="10_rrrbu"]
 [ext_resource type="PackedScene" path="res://scenes/ship/ship_storage.tscn" id="11_t0orf"]
 [ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/plant_32x48.png" id="12_jt2ml"]
-[ext_resource type="PackedScene" path="res://scenes/characters/player.tscn" id="13_qaw0k"]
 [ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/wall_bottom_32x48.png" id="14_mr71h"]
 [ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/wall_panel_32x32.png" id="15_f33up"]
 
@@ -320,9 +321,6 @@ offset = Vector2(0, -21)
 position = Vector2(0, 16)
 shape = SubResource("RectangleShape2D_qc3xq")
 
-[node name="Player" parent="WorldObjects" unique_id=101491683 instance=ExtResource("13_qaw0k")]
-position = Vector2(160, 168)
-
 [node name="ForegroundStructure" type="Node2D" parent="." unique_id=541349618]
 
 [node name="RearShoulder0" type="Sprite2D" parent="ForegroundStructure" unique_id=599494824]
@@ -419,3 +417,12 @@ quantity = 5
 position = Vector2(216, 164)
 item = ExtResource("20_tool")
 quantity = 1
+
+[node name="PlayerStart" type="Marker2D" parent="."]
+position = Vector2(160, 168)
+
+[node name="MarsReturnSpawn" type="Marker2D" parent="."]
+position = Vector2(160, 192)
+
+[node name="AirlockExit" parent="." instance=ExtResource("transition_interactable")]
+position = Vector2(160, 224)

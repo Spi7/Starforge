@@ -130,7 +130,8 @@ func test_ship_and_ui() -> void:
 	var ship: Node2D = load("res://scenes/ship/starter_ship.tscn").instantiate()
 	root.add_child(ship)
 	await process_frame
-	var player: Player = ship.get_node("WorldObjects/Player")
+	var player: Player = load("res://scenes/characters/player.tscn").instantiate()
+	ship.get_node("WorldObjects").add_child(player)
 	var storage: ShipStorage = ship.get_node("WorldObjects/Crate")
 	var ui = player.get_node("InventoryUI")
 	check(player.inventory.slots.size() == 20 and storage.inventory.slots.size() == 40, "Configured player and ship capacities")

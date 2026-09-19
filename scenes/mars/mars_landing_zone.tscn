@@ -1,5 +1,7 @@
 [gd_scene format=4]
 
+[ext_resource type="PackedScene" path="res://scenes/interactions/interactable.tscn" id="transition_interactable"]
+
 [ext_resource type="Texture2D" path="res://assets/sprites/mars/starter_ship_landed_384x352.png" id="7_va5cp"]
 [ext_resource type="Texture2D" path="res://assets/sprites/mars/supply_depot_192x128.png" id="8_eagl4"]
 [ext_resource type="Texture2D" path="res://assets/sprites/mars/request_terminal_32x64.png" id="9_gtidy"]
@@ -10,10 +12,8 @@
 [ext_resource type="Texture2D" path="res://assets/tilesets/mars/cliff_edge_c_160x64.png" id="12_nyxqt"]
 [ext_resource type="Texture2D" path="res://assets/sprites/mars/landing_beacon_16x32.png" id="13_idjms"]
 [ext_resource type="Texture2D" path="res://assets/tilesets/mars/cliff_chunk_medium_96x96.png" id="13_odw3n"]
-[ext_resource type="PackedScene" path="res://scenes/characters/player.tscn" id="14_5njs2"]
 [ext_resource type="Texture2D" path="res://assets/tilesets/mars/cliff_edge_b_128x64.png" id="14_va5cp"]
 [ext_resource type="Texture2D" path="res://assets/tilesets/mars/cliff_corner_right_96x96.png" id="15_eagl4"]
-[ext_resource type="Script" path="res://scripts/characters/player.gd" id="15_y3ny7"]
 [ext_resource type="Texture2D" path="res://assets/tilesets/mars/cliff_corner_left_96x96.png" id="16_gtidy"]
 [ext_resource type="Texture2D" path="res://assets/sprites/mars/route_barrier_horizontal_96x32.png" id="16_vfwrf"]
 [ext_resource type="Texture2D" path="res://assets/sprites/mars/route_barrier_vertical_32x96.png" id="17_f4vue"]
@@ -526,12 +526,6 @@ centered = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WorldObjects/Beacon28" unique_id=624524338]
 shape = SubResource("RectangleShape2D_efud0")
-
-[node name="Player" type="CharacterBody2D" parent="WorldObjects" unique_id=847333769 instance=ExtResource("14_5njs2")]
-y_sort_enabled = true
-position = Vector2(672, 864)
-motion_mode = 1
-script = ExtResource("15_y3ny7")
 
 [node name="CliffVisuals" type="Node2D" parent="WorldObjects" unique_id=192006835]
 y_sort_enabled = true
@@ -1063,14 +1057,13 @@ shape = SubResource("RectangleShape2D_wx3cl")
 [node name="ShipArrival" type="Marker2D" parent="." unique_id=1532219828]
 position = Vector2(672, 864)
 
-[node name="Camera2D" type="Camera2D" parent="." unique_id=1539676513 node_paths=PackedStringArray("target")]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1539676513]
 position = Vector2(672, 864)
 limit_left = 0
 limit_top = 0
 limit_right = 1280
 limit_bottom = 960
 script = ExtResource("18_nqnsm")
-target = NodePath("../WorldObjects/Player")
 
 [node name="CliffCollision" type="StaticBody2D" parent="." unique_id=940448864]
 collision_mask = 0
@@ -1092,3 +1085,6 @@ polygon = PackedVector2Array(1152, 448, 1344, 448, 1344, 992, 1088, 992, 1088, 8
 
 [node name="South" type="CollisionPolygon2D" parent="CliffCollision" unique_id=857241842]
 polygon = PackedVector2Array(128, 960, 192, 912, 272, 912, 272, 928, 416, 928, 416, 912, 544, 912, 544, 928, 608, 928, 608, 912, 768, 912, 768, 928, 864, 928, 864, 912, 944, 912, 944, 896, 1056, 896, 1056, 880, 1152, 880, 1152, 960, 1344, 960, 1344, 1024, 128, 1024)
+
+[node name="ShipEntrance" parent="WorldObjects/LandedShip" instance=ExtResource("transition_interactable")]
+position = Vector2(0, 32)
