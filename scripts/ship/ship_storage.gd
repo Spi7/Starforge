@@ -6,7 +6,12 @@ var inventory: InventoryData
 
 
 func _ready() -> void:
-	inventory = InventoryData.new(slot_capacity)
+	ensure_inventory()
+
+
+func ensure_inventory() -> void:
+	if inventory == null:
+		inventory = InventoryData.new(slot_capacity)
 
 
 func _on_interacted(actor: Node) -> void:

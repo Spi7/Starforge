@@ -1,6 +1,9 @@
 class_name WorldPickup
 extends Node2D
 
+signal quantity_changed(remaining: int)
+
+@export var persistent_id: StringName
 @export var item: ItemDefinition
 @export_range(1, 99999) var quantity: int = 1
 
@@ -22,6 +25,7 @@ func _on_interacted(actor: Node) -> void:
 		player.inventory_feedback.emit("No room for this pickup.")
 		return
 	quantity -= accepted
+	quantity_changed.emit(quantity)
 	player.inventory_feedback.emit("Picked up %d; %d remain." % [accepted, quantity])
 	if quantity == 0:
 		queue_free()

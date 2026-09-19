@@ -18,7 +18,8 @@ func check(condition: bool, description: String) -> void:
 func run() -> void:
 	var ship: Node2D = load("res://scenes/ship/starter_ship.tscn").instantiate()
 	root.add_child(ship)
-	var player: Player = ship.get_node("WorldObjects/Player")
+	var player: Player = load("res://scenes/characters/player.tscn").instantiate()
+	ship.get_node("WorldObjects").add_child(player)
 	player.set_physics_process(false)
 	await physics_frame
 	await physics_frame
@@ -62,7 +63,8 @@ func run() -> void:
 		ship.free()
 		ship = load("res://scenes/ship/starter_ship.tscn").instantiate()
 		root.add_child(ship)
-		player = ship.get_node("WorldObjects/Player")
+		player = load("res://scenes/characters/player.tscn").instantiate()
+		ship.get_node("WorldObjects").add_child(player)
 		player.set_physics_process(false)
 		player.position = Vector2(160, 168)
 		for window_size in [Vector2i(960, 540), Vector2i(1280, 720), Vector2i(1024, 768)]:

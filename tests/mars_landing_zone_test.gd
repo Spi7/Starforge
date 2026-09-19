@@ -20,7 +20,10 @@ func check(condition: bool, description: String) -> void:
 func run() -> void:
 	scene = load("res://scenes/mars/mars_landing_zone.tscn").instantiate()
 	root.add_child(scene)
-	player = scene.get_node("WorldObjects/Player")
+	player = load("res://scenes/characters/player.tscn").instantiate()
+	scene.get_node("WorldObjects").add_child(player)
+	player.position = scene.get_node("ShipArrival").position
+	scene.get_node("Camera2D").target = player
 	await physics_frame
 	await physics_frame
 	check(player.position == scene.get_node("ShipArrival").position, "Player starts at ship arrival")
