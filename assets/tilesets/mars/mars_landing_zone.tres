@@ -1,0 +1,39 @@
+[gd_resource type="TileSet" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/tilesets/mars/mars_ground_tiles_128x64.png" id="1_qyy1d"]
+[ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/floor_panel_a_32x32.png" id="4_kvrnt"]
+[ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/floor_panel_b_32x32.png" id="5_nyxqt"]
+[ext_resource type="Texture2D" path="res://assets/sprites/spaceship/artkit_v2/floor_service_32x32.png" id="6_odw3n"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0xmmp"]
+texture = ExtResource("1_qyy1d")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_g54vj"]
+texture = ExtResource("4_kvrnt")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_sfasx"]
+texture = ExtResource("5_nyxqt")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_utmim"]
+texture = ExtResource("6_odw3n")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+
+[resource]
+tile_size = Vector2i(32, 32)
+sources/0 = SubResource("TileSetAtlasSource_0xmmp")
+sources/3 = SubResource("TileSetAtlasSource_g54vj")
+sources/4 = SubResource("TileSetAtlasSource_sfasx")
+sources/5 = SubResource("TileSetAtlasSource_utmim")
