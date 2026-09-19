@@ -131,3 +131,7 @@ func show_feedback(message: String) -> void:
 
 func _clear_feedback() -> void:
 	$Feedback.text = ""
+
+
+func show_save_status(message: String) -> void:
+	$SaveStatus.text = message

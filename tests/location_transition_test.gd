@@ -104,6 +104,7 @@ func count_type(node: Node, type_name: String) -> int:
 
 func run() -> void:
 	session = load("res://scenes/game/game_session.tscn").instantiate()
+	session.persistence_enabled = false
 	root.add_child(session)
 	player = session.player
 	await settle()

@@ -399,21 +399,25 @@ texture = ExtResource("15_f33up")
 centered = false
 
 [node name="IronPickup" parent="WorldObjects" instance=ExtResource("16_pickup")]
+persistent_id = &"starter_ship_iron_01"
 position = Vector2(88, 76)
 item = ExtResource("17_iron")
 quantity = 120
 
 [node name="CopperPickup" parent="WorldObjects" instance=ExtResource("16_pickup")]
+persistent_id = &"starter_ship_copper_01"
 position = Vector2(232, 76)
 item = ExtResource("18_copper")
 quantity = 30
 
 [node name="NutrientPickup" parent="WorldObjects" instance=ExtResource("16_pickup")]
+persistent_id = &"starter_ship_nutrients_01"
 position = Vector2(104, 164)
 item = ExtResource("19_nutrient")
 quantity = 5
 
 [node name="ToolPickup" parent="WorldObjects" instance=ExtResource("16_pickup")]
+persistent_id = &"starter_ship_tool_01"
 position = Vector2(216, 164)
 item = ExtResource("20_tool")
 quantity = 1
