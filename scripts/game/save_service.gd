@@ -25,6 +25,9 @@ var safe_to_save: bool = false
 var current_location: String = "starter_ship"
 var status_message: String = ""
 var load_status: String = ""
+# Optional version-1 field. GameSession validates geometry and supplies local coordinates.
+var player_position: Variant = null
+var position_provider: Callable
 var _new_game: bool = false
 var _player_inventory: InventoryData
 var _storages: Dictionary = {}
@@ -116,13 +119,16 @@ func capture() -> Dictionary:
 	var storage_data := {}
 	for id: String in _storages:
 		storage_data[id] = _capture_inventory(_storages[id])
-	return {
+	var snapshot := {
 		"save_version": SAVE_VERSION,
 		"current_location": current_location,
 		"player_inventory": _capture_inventory(_player_inventory),
 		"storage_inventories": storage_data,
 		"ship_pickups": _pickup_remaining.duplicate(),
 	}
+	if position_provider.is_valid():
+		snapshot["player_position"] = position_provider.call()
+	return snapshot
 
 
 func _capture_inventory(inventory: InventoryData) -> Array:
@@ -202,6 +208,7 @@ func _apply(data: Dictionary) -> void:
 			pickup.free()
 	_pickups.clear()
 	current_location = data.current_location
+	player_position = data.get("player_position")
 	_player_inventory.changed.emit()
 	for storage: InventoryData in _storages.values():
 		storage.changed.emit()

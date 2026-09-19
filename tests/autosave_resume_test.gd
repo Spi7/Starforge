@@ -28,6 +28,7 @@ func create_session() -> void:
 	service.save_directory = directory
 	service.coalesce_seconds = 0.15
 	service.retry_seconds = 0.2
+	session.get_node("PositionCheckTimer").wait_time = 0.05
 	service.saved.connect(func() -> void: writes += 1)
 	root.add_child(session)
 	check(not session.player.controls_enabled and not session.player.get_node("InventoryUI").is_processing_input(), "Startup input locked")
@@ -104,7 +105,7 @@ func populate() -> void:
 
 func check_resumed(expected: Dictionary) -> void:
 	check(session.current_location == session.MARS, "Fresh session resumes Mars")
-	check(session.player.global_position == session.mars.get_node("ShipArrival").global_position, "Resume uses safe Mars marker")
+	check(session.player.global_position == Vector2(720, 864), "Mars position round trip")
 	check(session.save_service.capture() == expected, "All IDs, quantities, slots and location round trip")
 	check(not session.ship.is_inside_tree(), "Restored ship stays detached")
 	check(session.ship.get_node_or_null("WorldObjects/ToolPickup") == null, "Fully collected pickup stays absent")
@@ -139,6 +140,10 @@ func run() -> void:
 	before = writes
 	await travel(session.MARS)
 	check(writes == before + 1 and read_save().current_location == "mars_landing_zone", "Completed transition saves immediately")
+	check(read_save().player_position == {"x": 672.0, "y": 864.0}, "Transition saves destination arrival position")
+	session.player.position = Vector2(720, 864)
+	await create_timer(0.3).timeout
+	check(read_save().player_position == {"x": 720.0, "y": 864.0}, "Walking alone triggers ordinary position autosave")
 	var expected: Dictionary = session.save_service.capture()
 	for quantity in [-1, 121, 0.5, true]:
 		var bad_pickup := expected.duplicate(true)
@@ -164,10 +169,12 @@ func run() -> void:
 	ui.open_storage(storage(), "Ship Storage")
 	check(ui.storage == restored_storage and ui.storage_list.get_item_count() == 40, "UI opens restored storage")
 	ui.close()
-	# A ship save must resume at PlayerStart, not its last walking coordinates.
+	check(read_save().player_position == {"x": 160.0, "y": 192.0}, "Return transition saves ship destination in local coordinates")
+	session.player.position = Vector2(160, 140)
+	await create_timer(0.3).timeout
 	await destroy_session()
 	await create_session()
-	check(session.current_location == session.SHIP and session.player.position == Vector2(160, 168), "Fresh ship resume uses safe PlayerStart")
+	check(session.current_location == session.SHIP and session.player.position == Vector2(160, 140), "Ship position round trip")
 	check(session.ship.get_node_or_null("WorldObjects/ToolPickup") == null, "Collected pickup absent on direct ship resume")
 	# Continuous dirty events must not continually restart the coalescing timer.
 	before = writes
@@ -190,6 +197,38 @@ func run() -> void:
 	check(session.save_service.flush(true), "Close bypasses transition wait")
 	check(read_save().current_location == "starter_ship", "Close uses last completed location")
 	await destroy_session()
+	# Optional position is validated independently: bad coordinates do not discard inventory.
+	for location in ["starter_ship", "mars_landing_zone"]:
+		for position in [null, "bad", {"x": true, "y": 100}, {"x": 100}, {"x": 1e100, "y": 100}, {"x": -200, "y": 100}, {"x": 160, "y": 24} if location == "starter_ship" else {"x": 672, "y": 700}]:
+			clean_files()
+			var fallback := expected.duplicate(true)
+			fallback.current_location = location
+			if position == null:
+				fallback.erase("player_position")
+			else:
+				fallback.player_position = position
+			write_save(JSON.stringify(fallback))
+			await create_session()
+			var marker := Vector2(160, 168) if location == "starter_ship" else Vector2(672, 864)
+			check(session.player.position == marker, "Missing/malformed/outside/blocked position falls back on " + location)
+			check(session.save_service.writable and session.save_service.capture().player_inventory == expected.player_inventory, "Position fallback preserves valid progress and writable save")
+			check(not session._valid_position({"x": INF, "y": 100}) and not session._valid_position({"x": NAN, "y": 100}), "Non-finite coordinates rejected")
+			await destroy_session()
+	clean_files()
+	await create_session()
+	await travel(session.MARS)
+	before = writes
+	# Repeated small motion over many frames still uses the shared coalescing window.
+	for frame in 30:
+		session.player.position.x += 1.0
+		await create_timer(0.02).timeout
+	await create_timer(0.3).timeout
+	check(writes > before and writes - before <= 6, "Continuous movement coalesces rather than writing every frame")
+	check(read_save().player_position.x == session.player.position.x, "Last walking position eventually saved")
+	before = writes
+	await create_timer(0.3).timeout
+	check(writes == before, "Stationary position does not keep saving")
+	await destroy_session()
 	# Malformed and unsupported files never turn into a writable new game.
 	var invalid_storage := expected.duplicate(true)
 	invalid_storage.storage_inventories.starter_ship_storage_01 = [{"slot": 100, "item_id": "iron_ore", "quantity": 1}]
@@ -209,7 +248,7 @@ func run() -> void:
 		await destroy_session()
 	clean_files()
 	# Separate processes ensure no live runtime or service memory can carry progress.
-	for phase in ["writer", "reader"]:
+	for phase in ["writer", "reader", "position_writer", "position_reader"]:
 		var output: Array = []
 		var result := OS.execute(OS.get_executable_path(), ["--headless", "--path", ProjectSettings.globalize_path("res://"), "--script", "res://tests/autosave_resume_test.gd", "--", phase, directory], output, true)
 		check(result == 0, "Separate-process " + phase)
@@ -232,13 +271,23 @@ func process_phase(args: PackedStringArray) -> void:
 		await travel(session.MARS)
 		# Only the normal close hook can persist this last modification.
 		session.player.inventory.add_item(NUTRIENT, 3)
+		session.player.position = Vector2(736, 864)
 		check(session.save_service.dirty, "Pending progress before desktop close")
+		if failures:
+			quit(1)
+			return
+		session.notification(Node.NOTIFICATION_WM_CLOSE_REQUEST)
+	elif args[0] == "position_writer":
+		check(not session.save_service.dirty, "Movement-only close begins with a clean save")
+		session.player.position = Vector2(752, 864)
 		if failures:
 			quit(1)
 			return
 		session.notification(Node.NOTIFICATION_WM_CLOSE_REQUEST)
 	else:
 		check(session.current_location == session.MARS, "Separate-process Mars resume")
+		var expected_position := Vector2(752, 864) if args[0] == "position_reader" else Vector2(736, 864)
+		check(session.player.position == expected_position, "Desktop close captures latest position before sampling timer: " + args[0])
 		check(session.player.inventory.slots[7].item == NUTRIENT and session.player.inventory.slots[7].quantity == 3, "Desktop close saved pending inventory change")
 		check(storage().slots[2].item == TOOL and storage().slots[1].item == null, "Separate-process storage arrangement")
 		check(session.ship.get_node_or_null("WorldObjects/ToolPickup") == null and session.ship.get_node("WorldObjects/IronPickup").quantity == 111, "Separate-process pickup persistence")

@@ -15,3 +15,6 @@ one_shot = true
 [node name="ActiveLocation" type="Node2D" parent="."]
 
 [node name="PlayerParking" type="Node2D" parent="."]
+
+[node name="PositionCheckTimer" type="Timer" parent="."]
+wait_time = 1.0
