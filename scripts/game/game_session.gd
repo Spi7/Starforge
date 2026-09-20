@@ -19,6 +19,9 @@ var _starting: bool = true
 var _previous_auto_quit: bool = true
 var _observed_position: Vector2
 var _completed_position: Vector2
+var furnishings: ShipFurnishings
+var furnish_mode: Node2D
+var _leaving_furnish := false
 
 @onready var save_service: SaveService = $SaveService
 @onready var active_location: Node2D = $ActiveLocation
@@ -36,6 +39,7 @@ func _ready() -> void:
 	save_service.enabled = persistence_enabled
 	save_service.status_changed.connect(player.get_node("InventoryUI").show_save_status)
 	save_service.bind_state(player.inventory, {SHIP_STORAGE_ID: storage.inventory}, pickups)
+	save_service.bind_furnishings(furnishings)
 	save_service.position_provider = _position_for_save
 	var destination := StringName(save_service.load_game())
 	location_changed.connect(_on_location_changed)
@@ -53,6 +57,10 @@ func _create_session() -> void:
 	player = PLAYER_SCENE.instantiate()
 	player.controls_enabled = false
 	player_parking.add_child(player)
+	furnishings = ship.get_node("ShipFurnishings")
+	furnishings.player = player
+	furnish_mode = ship.get_node("FurnishMode")
+	furnish_mode.exit_requested.connect(_exit_furnish_mode)
 	_lock_input()
 	mars.get_node("Camera2D").target = player
 	ship.get_node("AirlockExit").interacted.connect(_request_transition.bind(SHIP, MARS, &"ShipArrival"))
@@ -106,6 +114,11 @@ func _finish_transition() -> void:
 	# Give interaction overlaps time to refresh after reparenting/teleporting.
 	await get_tree().physics_frame
 	await get_tree().physics_frame
+	if current_location == SHIP:
+		furnishings.validate_restored()
+		# Crate bodies must exist before testing the saved Player position.
+		await get_tree().physics_frame
+		await get_tree().physics_frame
 	if _starting and _valid_position(save_service.player_position):
 		var data: Dictionary = save_service.player_position
 		var location: Node2D = ship if current_location == SHIP else mars
@@ -125,6 +138,37 @@ func _finish_transition() -> void:
 	transitioning = false
 	# Destination, spawn and camera are now established.
 	location_changed.emit(current_location)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("furnish_toggle") and not event.is_echo():
+		if furnish_mode.active:
+			_exit_furnish_mode()
+		else:
+			_enter_furnish_mode()
+		get_viewport().set_input_as_handled()
+
+
+func _enter_furnish_mode() -> void:
+	if transitioning or current_location != SHIP or _leaving_furnish:
+		return
+	_lock_input()
+	furnish_mode.set_active(true)
+
+
+func _exit_furnish_mode() -> void:
+	if not furnish_mode.active or _leaving_furnish:
+		return
+	_leaving_furnish = true
+	furnish_mode.set_active(false)
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	while Input.is_action_pressed("interact") or Input.is_action_pressed("inventory_toggle"):
+		await get_tree().process_frame
+	if not transitioning:
+		player.get_node("InventoryUI").set_process_input(true)
+		player.controls_enabled = true
+	_leaving_furnish = false
 
 
 func _on_location_changed(location: StringName) -> void:

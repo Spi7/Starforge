@@ -4,7 +4,7 @@ extends Node
 signal status_changed(message: String)
 signal saved
 
-const SAVE_VERSION := 1
+const SAVE_VERSION := 2
 const ITEMS := [
 	preload("res://data/items/iron_ore.tres"),
 	preload("res://data/items/copper_ore.tres"),
@@ -35,6 +35,8 @@ var _items: Dictionary = {}
 var _pickups: Dictionary = {}
 var _pickup_limits: Dictionary = {}
 var _pickup_remaining: Dictionary = {}
+var _furnishings: ShipFurnishings
+var _counter_repaired := false
 
 @onready var timer: Timer = $AutosaveTimer
 
@@ -59,6 +61,11 @@ func bind_state(inventory: InventoryData, storages: Dictionary, pickups: Array[W
 	_player_inventory.changed.connect(mark_dirty)
 	for storage: InventoryData in _storages.values():
 		storage.changed.connect(mark_dirty)
+
+
+func bind_furnishings(furnishings: ShipFurnishings) -> void:
+	_furnishings = furnishings
+	furnishings.changed.connect(mark_dirty)
 
 
 func load_game() -> String:
@@ -94,7 +101,7 @@ func complete_location(location: String, initial: bool) -> void:
 	startup_complete = true
 	safe_to_save = true
 	if initial:
-		if _new_game:
+		if _new_game or _counter_repaired:
 			mark_dirty()
 	else:
 		mark_dirty()
@@ -125,10 +132,29 @@ func capture() -> Dictionary:
 		"player_inventory": _capture_inventory(_player_inventory),
 		"storage_inventories": storage_data,
 		"ship_pickups": _pickup_remaining.duplicate(),
+		"next_placed_object_id": _furnishings.next_placed_object_id if _furnishings != null else 1,
+		"placed_crates": _capture_crates(),
 	}
 	if position_provider.is_valid():
 		snapshot["player_position"] = position_provider.call()
 	return snapshot
+
+
+func _capture_crates() -> Array:
+	var entries: Array = []
+	if _furnishings == null:
+		return entries
+	for id: String in _furnishings.crates:
+		var record: Dictionary = _furnishings.crates[id]
+		entries.append({
+			"persistent_id": id,
+			"object_type": "storage_crate",
+			"location_id": "starter_ship",
+			"grid_position": {"x": record.cell.x, "y": record.cell.y},
+			"rotation_quarters": record.rotation_quarters,
+			"inventory": _capture_inventory(record.node.inventory),
+		})
+	return entries
 
 
 func _capture_inventory(inventory: InventoryData) -> Array:
@@ -145,7 +171,7 @@ func validate(data: Variant) -> String:
 		return "Save must be an object"
 	if not _integer(data.get("save_version"), 1, 2147483647):
 		return "Invalid save version"
-	if int(data.save_version) != SAVE_VERSION:
+	if int(data.save_version) not in [1, SAVE_VERSION]:
 		return "Unsupported save version"
 	if not data.get("current_location") is String or not LOCATIONS.has(data.current_location):
 		return "Unknown location"
@@ -165,6 +191,40 @@ func validate(data: Variant) -> String:
 	for id: String in _pickup_limits:
 		if not _integer(pickup_data.get(id), 0, _pickup_limits[id]):
 			return "Invalid pickup quantity: " + id
+	if int(data.save_version) == 2:
+		return _validate_crates(data)
+	return ""
+
+
+func _validate_crates(data: Dictionary) -> String:
+	if not _integer(data.get("next_placed_object_id"), 1, ShipFurnishings.MAX_NEXT_ID):
+		return "Invalid next placed object ID"
+	var entries: Variant = data.get("placed_crates")
+	if not entries is Array:
+		return "Invalid placed crates"
+	var seen := {}
+	var inventory := InventoryData.new(ShipFurnishings.CRATE_CAPACITY)
+	for entry: Variant in entries:
+		if not entry is Dictionary:
+			return "Invalid placed crate record"
+		var id: Variant = entry.get("persistent_id")
+		if not id is String or ShipFurnishings.id_sequence(id) == 0 or seen.has(id):
+			return "Invalid or duplicate placed object ID"
+		seen[id] = true
+		if entry.get("object_type") != "storage_crate" or entry.get("location_id") != "starter_ship":
+			return "Unsupported placed crate type or location"
+		# Pre-release M5A records without orientation retain their original zero rotation.
+		if not _integer(entry.get("rotation_quarters", 0), 0, 3):
+			return "Invalid crate rotation"
+		var cell: Variant = entry.get("grid_position")
+		if not cell is Dictionary:
+			return "Invalid crate grid position"
+		for axis in ["x", "y"]:
+			if not _integer(cell.get(axis), -2147483648, 2147483647):
+				return "Invalid crate grid position"
+		var error := _validate_inventory(entry.get("inventory"), inventory)
+		if not error.is_empty():
+			return "Placed crate %s: %s" % [id, error]
 	return ""
 
 
@@ -195,6 +255,16 @@ func _integer(value: Variant, minimum: int, maximum: int) -> bool:
 
 func _apply(data: Dictionary) -> void:
 	# All validation has completed. Preserve InventoryData and InventorySlot identity.
+	if _furnishings != null and int(data.save_version) == 2:
+		var saved_next := int(data.next_placed_object_id)
+		var effective_next := saved_next
+		for entry: Dictionary in data.placed_crates:
+			var crate := _furnishings.add_restored_crate(entry.persistent_id, Vector2i(int(entry.grid_position.x), int(entry.grid_position.y)), int(entry.get("rotation_quarters", 0)))
+			_restore_inventory(crate.inventory, entry.inventory)
+			effective_next = maxi(effective_next, ShipFurnishings.id_sequence(entry.persistent_id) + 1)
+		_furnishings.next_placed_object_id = effective_next
+		_furnishings.pending_validation = true
+		_counter_repaired = effective_next != saved_next
 	_restore_inventory(_player_inventory, data.player_inventory)
 	for id: String in _storages:
 		_restore_inventory(_storages[id], data.storage_inventories[id])

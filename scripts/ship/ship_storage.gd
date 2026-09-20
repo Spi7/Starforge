@@ -2,6 +2,8 @@ class_name ShipStorage
 extends StaticBody2D
 
 @export_range(1, 200) var slot_capacity: int = 40
+@export var persistent_id: String = ""
+@export var display_title: String = "Ship Storage"
 var inventory: InventoryData
 
 
@@ -16,4 +18,4 @@ func ensure_inventory() -> void:
 
 func _on_interacted(actor: Node) -> void:
 	if actor is Player:
-		(actor as Player).container_access_requested.emit(inventory, "Ship Storage")
+		(actor as Player).container_access_requested.emit(inventory, display_title)

@@ -273,6 +273,7 @@ func process_phase(args: PackedStringArray) -> void:
 		session.player.inventory.add_item(NUTRIENT, 3)
 		session.player.position = Vector2(736, 864)
 		check(session.save_service.dirty, "Pending progress before desktop close")
+		print("M4.6 separate-process writer: %d checks, %d failures" % [checks, failures])
 		if failures:
 			quit(1)
 			return
@@ -280,6 +281,7 @@ func process_phase(args: PackedStringArray) -> void:
 	elif args[0] == "position_writer":
 		check(not session.save_service.dirty, "Movement-only close begins with a clean save")
 		session.player.position = Vector2(752, 864)
+		print("M4.6 separate-process position writer: %d checks, %d failures" % [checks, failures])
 		if failures:
 			quit(1)
 			return
