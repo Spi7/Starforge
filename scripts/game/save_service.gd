@@ -4,7 +4,7 @@ extends Node
 signal status_changed(message: String)
 signal saved
 
-const SAVE_VERSION := 2
+const SAVE_VERSION := 3
 const ITEMS := [
 	preload("res://data/items/iron_ore.tres"),
 	preload("res://data/items/copper_ore.tres"),
@@ -36,6 +36,7 @@ var _pickups: Dictionary = {}
 var _pickup_limits: Dictionary = {}
 var _pickup_remaining: Dictionary = {}
 var _furnishings: ShipFurnishings
+var _economy: SessionEconomy
 var _counter_repaired := false
 
 @onready var timer: Timer = $AutosaveTimer
@@ -66,6 +67,11 @@ func bind_state(inventory: InventoryData, storages: Dictionary, pickups: Array[W
 func bind_furnishings(furnishings: ShipFurnishings) -> void:
 	_furnishings = furnishings
 	furnishings.changed.connect(mark_dirty)
+
+
+func bind_economy(economy: SessionEconomy) -> void:
+	_economy = economy
+	economy.changed.connect(mark_dirty)
 
 
 func load_game() -> String:
@@ -128,6 +134,8 @@ func capture() -> Dictionary:
 		storage_data[id] = _capture_inventory(_storages[id])
 	var snapshot := {
 		"save_version": SAVE_VERSION,
+		"credits": _economy.credits,
+		"owned_furnishings": {"storage_crate": _economy.owned_storage_crates()},
 		"current_location": current_location,
 		"player_inventory": _capture_inventory(_player_inventory),
 		"storage_inventories": storage_data,
@@ -171,10 +179,13 @@ func validate(data: Variant) -> String:
 		return "Save must be an object"
 	if not _integer(data.get("save_version"), 1, 2147483647):
 		return "Invalid save version"
-	if int(data.save_version) not in [1, SAVE_VERSION]:
+	if int(data.save_version) not in [1, 2, SAVE_VERSION]:
 		return "Unsupported save version"
 	if not data.get("current_location") is String or not LOCATIONS.has(data.current_location):
 		return "Unknown location"
+	var economy_error := _validate_economy(data)
+	if not economy_error.is_empty():
+		return economy_error
 	var error := _validate_inventory(data.get("player_inventory"), _player_inventory)
 	if not error.is_empty():
 		return "Player: " + error
@@ -191,8 +202,19 @@ func validate(data: Variant) -> String:
 	for id: String in _pickup_limits:
 		if not _integer(pickup_data.get(id), 0, _pickup_limits[id]):
 			return "Invalid pickup quantity: " + id
-	if int(data.save_version) == 2:
+	if int(data.save_version) >= 2:
 		return _validate_crates(data)
+	return ""
+
+
+func _validate_economy(data: Dictionary) -> String:
+	if int(data.save_version) >= 3 or data.has("credits"):
+		if not _integer(data.get("credits"), 0, SessionEconomy.MAX_BALANCE):
+			return "Invalid Credits"
+	if int(data.save_version) >= 3 or data.has("owned_furnishings"):
+		var owned: Variant = data.get("owned_furnishings")
+		if not owned is Dictionary or owned.size() != 1 or not _integer(owned.get("storage_crate"), 0, SessionEconomy.MAX_BALANCE):
+			return "Invalid owned furnishings"
 	return ""
 
 
@@ -255,7 +277,7 @@ func _integer(value: Variant, minimum: int, maximum: int) -> bool:
 
 func _apply(data: Dictionary) -> void:
 	# All validation has completed. Preserve InventoryData and InventorySlot identity.
-	if _furnishings != null and int(data.save_version) == 2:
+	if _furnishings != null and int(data.save_version) >= 2:
 		var saved_next := int(data.next_placed_object_id)
 		var effective_next := saved_next
 		for entry: Dictionary in data.placed_crates:
@@ -277,6 +299,7 @@ func _apply(data: Dictionary) -> void:
 			# Startup restoration runs before the ship enters the tree.
 			pickup.free()
 	_pickups.clear()
+	_economy.restore(int(data.get("credits", SessionEconomy.STARTING_CREDITS)), int(data.get("owned_furnishings", {"storage_crate": 0}).storage_crate))
 	current_location = data.current_location
 	player_position = data.get("player_position")
 	_player_inventory.changed.emit()

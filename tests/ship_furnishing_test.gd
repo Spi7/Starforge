@@ -43,6 +43,7 @@ func run() -> void:
 	while session.transitioning:
 		await physics_frame
 	furnishings = session.furnishings
+	session.economy.restore(SessionEconomy.STARTING_CREDITS, 20)
 	furnishings.changed.connect(func() -> void: changes += 1)
 	var player: Player = session.player
 	var mode = session.furnish_mode

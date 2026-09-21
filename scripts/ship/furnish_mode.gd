@@ -29,6 +29,9 @@ func _ready() -> void:
 	preview_rotate.pressed.connect(rotate_selected)
 	$UI/Panel/Content/Toolbar/Exit.pressed.connect(func() -> void: exit_requested.emit())
 	recovery.item_selected.connect(_select_recovery)
+	if furnishings.economy != null:
+		furnishings.economy.changed.connect(_refresh_owned)
+	_refresh_owned()
 	set_active(false)
 
 
@@ -39,10 +42,13 @@ func set_active(value: bool) -> void:
 	hints.visible = value
 	cancel_preview()
 	if active:
+		_refresh_owned()
 		_refresh_recovery()
 
 
 func select_new() -> void:
+	if furnishings.economy == null or furnishings.economy.owned_storage_crates() <= 0:
+		return
 	if not active:
 		return
 	selected_id = ""
@@ -217,3 +223,10 @@ func _refresh_recovery() -> void:
 func _select_recovery(index: int) -> void:
 	if index > 0:
 		select_crate(recovery_ids[index - 1])
+
+
+func _refresh_owned() -> void:
+	var quantity := furnishings.economy.owned_storage_crates() if furnishings.economy != null else 0
+	var button: Button = $UI/Panel/Content/Toolbar/Cards/NewCrate
+	button.text = "Storage Crate ×%d" % quantity
+	button.disabled = quantity == 0

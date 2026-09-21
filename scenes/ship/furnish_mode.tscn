@@ -92,11 +92,11 @@ theme_override_constants/separation = 8
 [node name="NewCrate" type="Button" parent="UI/Panel/Content/Toolbar/Cards"]
 custom_minimum_size = Vector2(184, 56)
 layout_mode = 2
-tooltip_text = "Storage Crate — unlimited prototype access"
+tooltip_text = "Place an owned Storage Crate"
 theme_override_constants/h_separation = 12
 theme_override_constants/icon_max_width = 40
 theme_override_font_sizes/font_size = 14
-text = "Storage Crate\n∞"
+text = "Storage Crate ×0"
 icon = ExtResource("2")
 expand_icon = true
 

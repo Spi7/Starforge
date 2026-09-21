@@ -32,6 +32,7 @@ func make_service() -> void:
 	inventory = InventoryData.new(20)
 	storage = InventoryData.new(40)
 	service.bind_state(inventory, {"starter_ship_storage_01": storage}, [])
+	service.bind_economy(SessionEconomy.new())
 
 
 func write_text(name: String, content: String) -> void:

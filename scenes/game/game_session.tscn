@@ -1,7 +1,10 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/game_session.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/game/save_service.gd" id="2"]
+
+[ext_resource type="PackedScene" path="res://scenes/ui/furnishing_shop_ui.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/ui/resource_hud.tscn" id="4"]
 
 [node name="GameSession" type="Node"]
 script = ExtResource("1")
@@ -18,3 +21,7 @@ one_shot = true
 
 [node name="PositionCheckTimer" type="Timer" parent="."]
 wait_time = 1.0
+
+[node name="FurnishingShopUI" parent="." instance=ExtResource("3")]
+
+[node name="ResourceHUD" parent="." instance=ExtResource("4")]
