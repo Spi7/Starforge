@@ -9,6 +9,8 @@ const PLAYER_SCENE := preload("res://scenes/characters/player.tscn")
 const SHIP_SCENE := preload("res://scenes/ship/starter_ship.tscn")
 const MARS_SCENE := preload("res://scenes/mars/mars_landing_zone.tscn")
 
+var economy := SessionEconomy.new()
+var _closing_shop := false
 var player: Player
 var ship: Node2D
 var mars: Node2D
@@ -23,6 +25,7 @@ var furnishings: ShipFurnishings
 var furnish_mode: Node2D
 var _leaving_furnish := false
 
+@onready var shop: FurnishingShopUI = $FurnishingShopUI
 @onready var save_service: SaveService = $SaveService
 @onready var active_location: Node2D = $ActiveLocation
 @onready var player_parking: Node2D = $PlayerParking
@@ -40,6 +43,7 @@ func _ready() -> void:
 	save_service.status_changed.connect(player.get_node("InventoryUI").show_save_status)
 	save_service.bind_state(player.inventory, {SHIP_STORAGE_ID: storage.inventory}, pickups)
 	save_service.bind_furnishings(furnishings)
+	save_service.bind_economy(economy)
 	save_service.position_provider = _position_for_save
 	var destination := StringName(save_service.load_game())
 	location_changed.connect(_on_location_changed)
@@ -59,6 +63,11 @@ func _create_session() -> void:
 	player_parking.add_child(player)
 	furnishings = ship.get_node("ShipFurnishings")
 	furnishings.player = player
+	furnishings.economy = economy
+	shop.bind_economy(economy)
+	$ResourceHUD.bind_economy(economy)
+	shop.close_requested.connect(_close_shop)
+	shop.open_requested.connect(_open_shop)
 	furnish_mode = ship.get_node("FurnishMode")
 	furnish_mode.exit_requested.connect(_exit_furnish_mode)
 	_lock_input()
@@ -150,7 +159,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _enter_furnish_mode() -> void:
-	if transitioning or current_location != SHIP or _leaving_furnish:
+	if transitioning or current_location != SHIP or _leaving_furnish or shop.is_open or _closing_shop:
 		return
 	_lock_input()
 	furnish_mode.set_active(true)
@@ -244,3 +253,32 @@ func _exit_tree() -> void:
 	for location in [ship, mars]:
 		if is_instance_valid(location) and location.get_parent() == null:
 			location.free()
+
+
+func _process(_delta: float) -> void:
+	shop.set_access_available(_can_open_shop())
+
+
+func _can_open_shop() -> bool:
+	return not transitioning and player.controls_enabled and not furnish_mode.active and not _leaving_furnish and not shop.is_open and not _closing_shop
+
+
+func _open_shop() -> void:
+	if not _can_open_shop():
+		return
+	_lock_input()
+	shop.open()
+
+
+func _close_shop() -> void:
+	if not shop.is_open or _closing_shop:
+		return
+	_closing_shop = true
+	shop.close()
+	await get_tree().process_frame
+	while Input.is_action_pressed("interact") or Input.is_action_pressed("ui_cancel") or Input.is_action_pressed("inventory_toggle") or Input.is_action_pressed("furnish_toggle"):
+		await get_tree().process_frame
+	if not transitioning:
+		player.get_node("InventoryUI").set_process_input(true)
+		player.controls_enabled = true
+	_closing_shop = false

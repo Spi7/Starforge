@@ -42,6 +42,7 @@ func run() -> void:
 	var furnishings: ShipFurnishings = session.furnishings
 	var mode = session.furnish_mode
 	var authored: ShipStorage = session.ship.get_node("WorldObjects/Crate")
+	session.economy.restore(SessionEconomy.STARTING_CREDITS, 20)
 	furnishings.changed.connect(func() -> void: changes += 1)
 	check(service.flush(), "Initial isolated save")
 	action(&"furnish_toggle")

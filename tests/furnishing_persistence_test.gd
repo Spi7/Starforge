@@ -86,6 +86,7 @@ func run() -> void:
 	directory = "user://m5a_persistence_test_%d_%d" % [OS.get_process_id(), Time.get_ticks_usec()]
 	check(DirAccess.make_dir_recursive_absolute(directory) == OK, "Create isolated directory")
 	await start()
+	session.economy.restore(SessionEconomy.STARTING_CREDITS, 20)
 	var base: Dictionary = session.save_service.capture()
 	var valid := base.duplicate(true)
 	valid.placed_crates = [entry(1, Vector2i(2, 3))]
@@ -137,6 +138,7 @@ func run() -> void:
 		check(not session.save_service.validate(bad).is_empty(), "Invalid dynamic inventory rejected")
 	await stop()
 	var old_m5a := valid.duplicate(true)
+	old_m5a.save_version = 2
 	old_m5a.placed_crates[0].erase("rotation_quarters")
 	write_fixture(old_m5a)
 	await start()
@@ -160,7 +162,7 @@ func run() -> void:
 	check(session.furnishings.create_crate(Vector2i(2, 3)) == "placed_object_000001", "Version 1 first allocation")
 	check(session.save_service.dirty, "Placement dirties autosave")
 	await create_timer(0.25).timeout
-	check(read_save().save_version == 2 and not session.save_service.dirty, "Next autosave upgrades to version 2")
+	check(read_save().save_version == 3 and not session.save_service.dirty, "Next autosave upgrades to version 3")
 	var crate: ShipStorage = session.furnishings.crates.placed_object_000001.node
 	crate.inventory.add_item(IRON, 13)
 	check(session.save_service.dirty, "Dynamic inventory change dirties autosave")
@@ -259,6 +261,7 @@ func process_phase(args: PackedStringArray) -> void:
 	await start()
 	var furnishings: ShipFurnishings = session.furnishings
 	if args[0] == "ship_writer":
+		session.economy.restore(SessionEconomy.STARTING_CREDITS, 20)
 		check(furnishings.create_crate(Vector2i(2, 3)) == "placed_object_000001", "First process allocation")
 		check(furnishings.rotate_crate("placed_object_000001"), "Rotate before desktop close")
 		furnishings.crates.placed_object_000001.node.inventory.add_item(IRON, 17)

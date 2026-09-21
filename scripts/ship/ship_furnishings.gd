@@ -13,6 +13,7 @@ const GRID_SIZE := 32
 var next_placed_object_id: int = 1
 # Each record owns a cell and a ShipStorage, including crates awaiting recovery.
 var crates: Dictionary = {}
+var economy: SessionEconomy
 var player: Player
 var pending_validation := false
 
@@ -90,6 +91,8 @@ func placement_error(cell: Vector2i, moving_id: String = "", restoring: bool = f
 
 
 func create_crate(cell: Vector2i, rotation_quarters: int = 0) -> String:
+	if economy == null or economy.owned_storage_crates() <= 0:
+		return ""
 	if rotation_quarters < 0 or rotation_quarters > 3:
 		return ""
 	if not placement_error(cell).is_empty() or next_placed_object_id >= MAX_NEXT_ID:
@@ -100,6 +103,7 @@ func create_crate(cell: Vector2i, rotation_quarters: int = 0) -> String:
 	var crate := add_restored_crate(id, cell, rotation_quarters)
 	_activate_crate(id)
 	next_placed_object_id += 1
+	economy.consume_storage_crate()
 	changed.emit()
 	return crate.persistent_id
 
@@ -177,6 +181,8 @@ func rotate_crate(id: String) -> bool:
 
 
 func remove_crate(id: String) -> bool:
+	if economy == null or not economy.can_return_storage_crate():
+		return false
 	if not crates.has(id):
 		return false
 	var crate: ShipStorage = crates[id].node
@@ -187,5 +193,6 @@ func remove_crate(id: String) -> bool:
 	crates.erase(id)
 	crate.get_parent().remove_child(crate)
 	crate.queue_free()
+	economy.return_storage_crate()
 	changed.emit()
 	return true
