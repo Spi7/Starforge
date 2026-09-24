@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/characters/player.gd" id="1_player"]
 
 [ext_resource type="PackedScene" path="res://scenes/ui/inventory_ui.tscn" id="2_ui"]
+[ext_resource type="SpriteFrames" path="res://assets/sprites/player/player_frames.tres" id="3_frames"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
 size = Vector2(24, 24)
@@ -15,11 +16,13 @@ y_sort_enabled = true
 motion_mode = 1
 script = ExtResource("1_player")
 
-[node name="Placeholder" type="Polygon2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
 position = Vector2(0, 12)
-offset = Vector2(0, -12)
-polygon = PackedVector2Array(-12, -12, 12, -12, 12, 12, -12, 12)
-color = Color(0.3, 0.8, 1, 1)
+sprite_frames = ExtResource("3_frames")
+animation = &"idle_down"
+autoplay = "idle_down"
+offset = Vector2(0, -20)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_player")

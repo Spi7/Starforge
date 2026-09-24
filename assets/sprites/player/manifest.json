@@ -1,0 +1,33 @@
+{
+  "frame_size": [
+    32,
+    48
+  ],
+  "direction_rows": {
+    "down": 0,
+    "left": 1,
+    "right": 2,
+    "up": 3
+  },
+  "animations": {
+    "idle": {
+      "file": "player_idle_32x48_4dir_4f.png",
+      "frames": 4
+    },
+    "walk": {
+      "file": "player_walk_32x48_4dir_4f.png",
+      "frames": 4
+    },
+    "mining": {
+      "file": "player_mining_32x48_4dir_6f.png",
+      "frames": 6
+    }
+  },
+  "pickaxe": {
+    "file": "basic_pickaxe_32x32.png",
+    "size": [
+      32,
+      32
+    ]
+  }
+}
