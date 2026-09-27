@@ -1,0 +1,130 @@
+[gd_scene format=3 uid="uid://barmngr0th6hq"]
+
+[ext_resource type="PackedScene" path="res://scenes/characters/player.tscn" id="2_player"]
+[ext_resource type="Script" uid="uid://dp0e1ntf0wwxr" path="res://scripts/mars/mining_node.gd" id="3_mining"]
+[ext_resource type="Script" uid="uid://da8e2cn6dcgcy" path="res://scripts/mars/mining_overflow.gd" id="4_overflow"]
+[ext_resource type="PackedScene" path="res://scenes/interactions/interactable.tscn" id="5_interactable"]
+[ext_resource type="Resource" path="res://data/items/iron_ore.tres" id="6_iron"]
+[ext_resource type="Texture2D" uid="uid://dfhmee4w76uh4" path="res://assets/sprites/mars/mars_rocks_96x32.png" id="7_rock"]
+
+[sub_resource type="GDScript" id="GDScript_velsp"]
+script/source = "# Developer-only F6 sandbox. No GameSession, SaveService, or file I/O.
+extends Node2D
+
+const TOOL := preload(\"res://data/items/basic_mining_tool.tres\")
+const FILLER := preload(\"res://data/items/nutrient_pack.tres\")
+
+@onready var player: Player = $WorldObjects/Player
+@onready var deposit: MiningNode = $WorldObjects/IronOreTestRock
+@onready var overflow: MiningOverflow = $MiningOverflow
+@onready var free_slot_button: Button = $TestUI/Instructions/FreeSlot
+
+
+func _ready() -> void:
+	overflow.world_objects = $WorldObjects
+	deposit.overflow_store = overflow
+	player.inventory.add_item(TOOL, 1)
+	player.inventory.add_item(FILLER, (player.inventory.slots.size() - 1) * FILLER.max_stack)
+	free_slot_button.pressed.connect(_free_slot)
+
+
+func _process(_delta: float) -> void:
+	free_slot_button.disabled = not player.controls_enabled or player.inventory.slots[-1].item != FILLER
+
+
+func _free_slot() -> void:
+	if not player.controls_enabled:
+		return
+	var slot := player.inventory.slots[-1]
+	if slot.item != FILLER:
+		return
+	# Discard only the last sandbox filler stack; keep the mining tool.
+	slot.item = null
+	slot.quantity = 0
+	player.inventory.changed.emit()
+	free_slot_button.text = \"Space freed - press E near the dropped ore\"
+"
+
+[sub_resource type="RectangleShape2D" id="RockCollision"]
+size = Vector2(22, 14)
+
+[node name="MiningOverflowManualTest" type="Node2D" unique_id=1001905271]
+texture_filter = 1
+script = SubResource("GDScript_velsp")
+
+[node name="Floor" type="Polygon2D" parent="." unique_id=765526102]
+color = Color(0.22, 0.13, 0.1, 1)
+polygon = PackedVector2Array(-1000, -1000, 1000, -1000, 1000, 1000, -1000, 1000)
+
+[node name="WorldObjects" type="Node2D" parent="." unique_id=5802596]
+y_sort_enabled = true
+
+[node name="Player" parent="WorldObjects" unique_id=1293137485 instance=ExtResource("2_player")]
+position = Vector2(0, 40)
+
+[node name="IronOreTestRock" type="StaticBody2D" parent="WorldObjects" unique_id=1378415596]
+collision_mask = 0
+script = ExtResource("3_mining")
+persistent_id = &"dev_only_iron_deposit"
+item = ExtResource("6_iron")
+
+[node name="Sprite2D" type="Sprite2D" parent="WorldObjects/IronOreTestRock" unique_id=100010193]
+position = Vector2(-16, -24)
+texture = ExtResource("7_rock")
+centered = false
+region_enabled = true
+region_rect = Rect2(32, 0, 32, 32)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldObjects/IronOreTestRock" unique_id=87616241]
+shape = SubResource("RockCollision")
+
+[node name="Interactable" parent="WorldObjects/IronOreTestRock" unique_id=1526223642 instance=ExtResource("5_interactable")]
+
+[node name="ReplenishmentTimer" type="Timer" parent="WorldObjects/IronOreTestRock" unique_id=81144069]
+wait_time = 0.5
+autostart = true
+
+[node name="MiningPrompt" type="Label" parent="WorldObjects/IronOreTestRock" unique_id=428922003]
+visible = false
+z_index = 2
+offset_left = -35.0
+offset_top = -54.0
+offset_right = 35.0
+offset_bottom = -24.0
+theme_override_font_sizes/font_size = 10
+text = "Iron Ore
+[E] Mine"
+horizontal_alignment = 1
+
+[node name="MiningOverflow" type="Node" parent="." unique_id=1497333883]
+script = ExtResource("4_overflow")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=280972927]
+zoom = Vector2(2, 2)
+
+[node name="TestUI" type="CanvasLayer" parent="." unique_id=1056703866]
+
+[node name="Instructions" type="VBoxContainer" parent="TestUI" unique_id=1461472693]
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 650.0
+offset_bottom = 140.0
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="TestUI/Instructions" unique_id=1547858715]
+layout_mode = 2
+text = "DEV ONLY - Mining overflow sandbox (no saves)"
+
+[node name="Steps" type="Label" parent="TestUI/Instructions" unique_id=501184244]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Inventory starts full: 1 mining tool + 19 full filler stacks.
+1. Press E now to mine; watch the +N fade and one ore pickup.
+2. Click the button below, then press E near the pickup to collect.
+WASD: move. I: inventory. F8: stop. Run F6 again to reset."
+
+[node name="FreeSlot" type="Button" parent="TestUI/Instructions" unique_id=1486523925]
+layout_mode = 2
+size_flags_horizontal = 0
+focus_mode = 0
+text = "Free one inventory slot (test only)"

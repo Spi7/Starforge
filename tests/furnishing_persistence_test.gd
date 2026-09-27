@@ -162,7 +162,7 @@ func run() -> void:
 	check(session.furnishings.create_crate(Vector2i(2, 3)) == "placed_object_000001", "Version 1 first allocation")
 	check(session.save_service.dirty, "Placement dirties autosave")
 	await create_timer(0.25).timeout
-	check(read_save().save_version == 3 and not session.save_service.dirty, "Next autosave upgrades to version 3")
+	check(read_save().save_version == SaveService.SAVE_VERSION and not session.save_service.dirty, "Next autosave upgrades to current version")
 	var crate: ShipStorage = session.furnishings.crates.placed_object_000001.node
 	crate.inventory.add_item(IRON, 13)
 	check(session.save_service.dirty, "Dynamic inventory change dirties autosave")

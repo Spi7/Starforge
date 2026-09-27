@@ -20,12 +20,14 @@ func _on_interacted(actor: Node) -> void:
 	if not actor is Player or quantity <= 0 or is_queued_for_deletion():
 		return
 	var player: Player = actor as Player
-	var accepted: int = player.inventory.add_item(item, quantity)
+	var accepted: int = player.inventory._add_item(item, quantity)
 	if accepted == 0:
 		player.inventory_feedback.emit("No room for this pickup.")
 		return
 	quantity -= accepted
+	# Publish only after both inventory and remaining world quantity are final.
 	quantity_changed.emit(quantity)
+	player.inventory.changed.emit()
 	player.inventory_feedback.emit("Picked up %d; %d remain." % [accepted, quantity])
 	if quantity == 0:
 		queue_free()

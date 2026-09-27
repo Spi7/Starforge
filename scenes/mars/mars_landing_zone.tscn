@@ -1,5 +1,9 @@
 [gd_scene format=4]
 
+[ext_resource type="Script" path="res://scripts/mars/mining_node.gd" id="mining_script"]
+[ext_resource type="Script" path="res://scripts/mars/mining_overflow.gd" id="mining_overflow"]
+[ext_resource type="Resource" path="res://data/items/iron_ore.tres" id="mining_iron"]
+
 [ext_resource type="PackedScene" path="res://scenes/interactions/interactable.tscn" id="transition_interactable"]
 
 [ext_resource type="Texture2D" path="res://assets/sprites/mars/starter_ship_landed_384x352.png" id="7_va5cp"]
@@ -253,6 +257,29 @@ shape = SubResource("RectangleShape2D_eqnv5")
 position = Vector2(192, 344)
 collision_mask = 0
 
+script = ExtResource("mining_script")
+persistent_id = &"mars_iron_deposit_05"
+item = ExtResource("mining_iron")
+replenishment_seconds = 60.0
+
+[node name="Interactable" parent="WorldObjects/Rock0" instance=ExtResource("transition_interactable")]
+
+[node name="ReplenishmentTimer" type="Timer" parent="WorldObjects/Rock0"]
+wait_time = 0.5
+autostart = true
+
+[node name="MiningPrompt" type="Label" parent="WorldObjects/Rock0"]
+offset_left = -35.0
+visible = false
+z_index = 2
+offset_top = -54.0
+offset_right = 35.0
+offset_bottom = -24.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 10
+text = "Iron Ore\n[E] Mine"
+horizontal_alignment = 1
+
 [node name="Sprite2D" type="Sprite2D" parent="WorldObjects/Rock0" unique_id=1596251970]
 position = Vector2(-16, -24)
 texture = ExtResource("11_3s8wh")
@@ -266,6 +293,28 @@ shape = SubResource("RectangleShape2D_cvvj5")
 [node name="Rock1" type="StaticBody2D" parent="WorldObjects" unique_id=292646476]
 position = Vector2(384, 192)
 collision_mask = 0
+script = ExtResource("mining_script")
+persistent_id = &"mars_iron_deposit_01"
+item = ExtResource("mining_iron")
+replenishment_seconds = 60.0
+
+[node name="Interactable" parent="WorldObjects/Rock1" instance=ExtResource("transition_interactable")]
+
+[node name="ReplenishmentTimer" type="Timer" parent="WorldObjects/Rock1"]
+wait_time = 0.5
+autostart = true
+
+[node name="MiningPrompt" type="Label" parent="WorldObjects/Rock1"]
+offset_left = -35.0
+visible = false
+z_index = 2
+offset_top = -54.0
+offset_right = 35.0
+offset_bottom = -24.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 10
+text = "Iron Ore\n[E] Mine"
+horizontal_alignment = 1
 
 [node name="Sprite2D" type="Sprite2D" parent="WorldObjects/Rock1" unique_id=599965805]
 position = Vector2(-16, -24)
@@ -281,6 +330,29 @@ shape = SubResource("RectangleShape2D_ojjpe")
 position = Vector2(928, 200)
 collision_mask = 0
 
+script = ExtResource("mining_script")
+persistent_id = &"mars_iron_deposit_06"
+item = ExtResource("mining_iron")
+replenishment_seconds = 60.0
+
+[node name="Interactable" parent="WorldObjects/Rock2" instance=ExtResource("transition_interactable")]
+
+[node name="ReplenishmentTimer" type="Timer" parent="WorldObjects/Rock2"]
+wait_time = 0.5
+autostart = true
+
+[node name="MiningPrompt" type="Label" parent="WorldObjects/Rock2"]
+offset_left = -35.0
+visible = false
+z_index = 2
+offset_top = -54.0
+offset_right = 35.0
+offset_bottom = -24.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 10
+text = "Iron Ore\n[E] Mine"
+horizontal_alignment = 1
+
 [node name="Sprite2D" type="Sprite2D" parent="WorldObjects/Rock2" unique_id=244611441]
 position = Vector2(-16, -24)
 texture = ExtResource("11_3s8wh")
@@ -295,6 +367,29 @@ shape = SubResource("RectangleShape2D_x3drq")
 position = Vector2(224, 632)
 collision_mask = 0
 
+script = ExtResource("mining_script")
+persistent_id = &"mars_iron_deposit_07"
+item = ExtResource("mining_iron")
+replenishment_seconds = 60.0
+
+[node name="Interactable" parent="WorldObjects/Rock3" instance=ExtResource("transition_interactable")]
+
+[node name="ReplenishmentTimer" type="Timer" parent="WorldObjects/Rock3"]
+wait_time = 0.5
+autostart = true
+
+[node name="MiningPrompt" type="Label" parent="WorldObjects/Rock3"]
+offset_left = -35.0
+visible = false
+z_index = 2
+offset_top = -54.0
+offset_right = 35.0
+offset_bottom = -24.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 10
+text = "Iron Ore\n[E] Mine"
+horizontal_alignment = 1
+
 [node name="Sprite2D" type="Sprite2D" parent="WorldObjects/Rock3" unique_id=884854300]
 position = Vector2(-16, -24)
 texture = ExtResource("11_3s8wh")
@@ -308,6 +403,28 @@ shape = SubResource("RectangleShape2D_f5y1q")
 [node name="Rock4" type="StaticBody2D" parent="WorldObjects" unique_id=1355791468]
 position = Vector2(432, 200)
 collision_mask = 0
+script = ExtResource("mining_script")
+persistent_id = &"mars_iron_deposit_02"
+item = ExtResource("mining_iron")
+replenishment_seconds = 60.0
+
+[node name="Interactable" parent="WorldObjects/Rock4" instance=ExtResource("transition_interactable")]
+
+[node name="ReplenishmentTimer" type="Timer" parent="WorldObjects/Rock4"]
+wait_time = 0.5
+autostart = true
+
+[node name="MiningPrompt" type="Label" parent="WorldObjects/Rock4"]
+offset_left = -35.0
+visible = false
+z_index = 2
+offset_top = -54.0
+offset_right = 35.0
+offset_bottom = -24.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 10
+text = "Iron Ore\n[E] Mine"
+horizontal_alignment = 1
 
 [node name="Sprite2D" type="Sprite2D" parent="WorldObjects/Rock4" unique_id=871719588]
 position = Vector2(-16, -24)
@@ -323,6 +440,29 @@ shape = SubResource("RectangleShape2D_6y23w")
 position = Vector2(1104, 336)
 collision_mask = 0
 
+script = ExtResource("mining_script")
+persistent_id = &"mars_iron_deposit_08"
+item = ExtResource("mining_iron")
+replenishment_seconds = 60.0
+
+[node name="Interactable" parent="WorldObjects/Rock5" instance=ExtResource("transition_interactable")]
+
+[node name="ReplenishmentTimer" type="Timer" parent="WorldObjects/Rock5"]
+wait_time = 0.5
+autostart = true
+
+[node name="MiningPrompt" type="Label" parent="WorldObjects/Rock5"]
+offset_left = -35.0
+visible = false
+z_index = 2
+offset_top = -54.0
+offset_right = 35.0
+offset_bottom = -24.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 10
+text = "Iron Ore\n[E] Mine"
+horizontal_alignment = 1
+
 [node name="Sprite2D" type="Sprite2D" parent="WorldObjects/Rock5" unique_id=581528351]
 position = Vector2(-16, -24)
 texture = ExtResource("11_3s8wh")
@@ -337,6 +477,29 @@ shape = SubResource("RectangleShape2D_tqwy4")
 position = Vector2(336, 664)
 collision_mask = 0
 
+script = ExtResource("mining_script")
+persistent_id = &"mars_iron_deposit_09"
+item = ExtResource("mining_iron")
+replenishment_seconds = 60.0
+
+[node name="Interactable" parent="WorldObjects/Rock6" instance=ExtResource("transition_interactable")]
+
+[node name="ReplenishmentTimer" type="Timer" parent="WorldObjects/Rock6"]
+wait_time = 0.5
+autostart = true
+
+[node name="MiningPrompt" type="Label" parent="WorldObjects/Rock6"]
+offset_left = -35.0
+visible = false
+z_index = 2
+offset_top = -54.0
+offset_right = 35.0
+offset_bottom = -24.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 10
+text = "Iron Ore\n[E] Mine"
+horizontal_alignment = 1
+
 [node name="Sprite2D" type="Sprite2D" parent="WorldObjects/Rock6" unique_id=876635199]
 position = Vector2(-16, -24)
 texture = ExtResource("11_3s8wh")
@@ -350,6 +513,28 @@ shape = SubResource("RectangleShape2D_ihotu")
 [node name="Rock7" type="StaticBody2D" parent="WorldObjects" unique_id=1963098447]
 position = Vector2(224, 808)
 collision_mask = 0
+script = ExtResource("mining_script")
+persistent_id = &"mars_iron_deposit_03"
+item = ExtResource("mining_iron")
+replenishment_seconds = 60.0
+
+[node name="Interactable" parent="WorldObjects/Rock7" instance=ExtResource("transition_interactable")]
+
+[node name="ReplenishmentTimer" type="Timer" parent="WorldObjects/Rock7"]
+wait_time = 0.5
+autostart = true
+
+[node name="MiningPrompt" type="Label" parent="WorldObjects/Rock7"]
+offset_left = -35.0
+visible = false
+z_index = 2
+offset_top = -54.0
+offset_right = 35.0
+offset_bottom = -24.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 10
+text = "Iron Ore\n[E] Mine"
+horizontal_alignment = 1
 
 [node name="Sprite2D" type="Sprite2D" parent="WorldObjects/Rock7" unique_id=1478957800]
 position = Vector2(-16, -24)
@@ -365,6 +550,29 @@ shape = SubResource("RectangleShape2D_eyk7c")
 position = Vector2(1072, 520)
 collision_mask = 0
 
+script = ExtResource("mining_script")
+persistent_id = &"mars_iron_deposit_10"
+item = ExtResource("mining_iron")
+replenishment_seconds = 60.0
+
+[node name="Interactable" parent="WorldObjects/Rock8" instance=ExtResource("transition_interactable")]
+
+[node name="ReplenishmentTimer" type="Timer" parent="WorldObjects/Rock8"]
+wait_time = 0.5
+autostart = true
+
+[node name="MiningPrompt" type="Label" parent="WorldObjects/Rock8"]
+offset_left = -35.0
+visible = false
+z_index = 2
+offset_top = -54.0
+offset_right = 35.0
+offset_bottom = -24.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 10
+text = "Iron Ore\n[E] Mine"
+horizontal_alignment = 1
+
 [node name="Sprite2D" type="Sprite2D" parent="WorldObjects/Rock8" unique_id=1589851923]
 position = Vector2(-16, -24)
 texture = ExtResource("11_3s8wh")
@@ -379,6 +587,29 @@ shape = SubResource("RectangleShape2D_bepvv")
 position = Vector2(1104, 744)
 collision_mask = 0
 
+script = ExtResource("mining_script")
+persistent_id = &"mars_iron_deposit_11"
+item = ExtResource("mining_iron")
+replenishment_seconds = 60.0
+
+[node name="Interactable" parent="WorldObjects/Rock9" instance=ExtResource("transition_interactable")]
+
+[node name="ReplenishmentTimer" type="Timer" parent="WorldObjects/Rock9"]
+wait_time = 0.5
+autostart = true
+
+[node name="MiningPrompt" type="Label" parent="WorldObjects/Rock9"]
+offset_left = -35.0
+visible = false
+z_index = 2
+offset_top = -54.0
+offset_right = 35.0
+offset_bottom = -24.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 10
+text = "Iron Ore\n[E] Mine"
+horizontal_alignment = 1
+
 [node name="Sprite2D" type="Sprite2D" parent="WorldObjects/Rock9" unique_id=84464550]
 position = Vector2(-16, -24)
 texture = ExtResource("11_3s8wh")
@@ -392,6 +623,28 @@ shape = SubResource("RectangleShape2D_ydi60")
 [node name="Rock10" type="StaticBody2D" parent="WorldObjects" unique_id=1561311190]
 position = Vector2(992, 272)
 collision_mask = 0
+script = ExtResource("mining_script")
+persistent_id = &"mars_iron_deposit_04"
+item = ExtResource("mining_iron")
+replenishment_seconds = 60.0
+
+[node name="Interactable" parent="WorldObjects/Rock10" instance=ExtResource("transition_interactable")]
+
+[node name="ReplenishmentTimer" type="Timer" parent="WorldObjects/Rock10"]
+wait_time = 0.5
+autostart = true
+
+[node name="MiningPrompt" type="Label" parent="WorldObjects/Rock10"]
+offset_left = -35.0
+visible = false
+z_index = 2
+offset_top = -54.0
+offset_right = 35.0
+offset_bottom = -24.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 10
+text = "Iron Ore\n[E] Mine"
+horizontal_alignment = 1
 
 [node name="Sprite2D" type="Sprite2D" parent="WorldObjects/Rock10" unique_id=22817661]
 position = Vector2(-16, -24)
@@ -407,6 +660,29 @@ shape = SubResource("RectangleShape2D_f1icu")
 position = Vector2(816, 184)
 collision_mask = 0
 
+script = ExtResource("mining_script")
+persistent_id = &"mars_iron_deposit_12"
+item = ExtResource("mining_iron")
+replenishment_seconds = 60.0
+
+[node name="Interactable" parent="WorldObjects/Rock11" instance=ExtResource("transition_interactable")]
+
+[node name="ReplenishmentTimer" type="Timer" parent="WorldObjects/Rock11"]
+wait_time = 0.5
+autostart = true
+
+[node name="MiningPrompt" type="Label" parent="WorldObjects/Rock11"]
+offset_left = -35.0
+visible = false
+z_index = 2
+offset_top = -54.0
+offset_right = 35.0
+offset_bottom = -24.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 10
+text = "Iron Ore\n[E] Mine"
+horizontal_alignment = 1
+
 [node name="Sprite2D" type="Sprite2D" parent="WorldObjects/Rock11" unique_id=1483638026]
 position = Vector2(-16, -24)
 texture = ExtResource("11_3s8wh")
@@ -420,6 +696,29 @@ shape = SubResource("RectangleShape2D_1h1y4")
 [node name="Rock12" type="StaticBody2D" parent="WorldObjects" unique_id=896268623]
 position = Vector2(352, 888)
 collision_mask = 0
+
+script = ExtResource("mining_script")
+persistent_id = &"mars_iron_deposit_13"
+item = ExtResource("mining_iron")
+replenishment_seconds = 60.0
+
+[node name="Interactable" parent="WorldObjects/Rock12" instance=ExtResource("transition_interactable")]
+
+[node name="ReplenishmentTimer" type="Timer" parent="WorldObjects/Rock12"]
+wait_time = 0.5
+autostart = true
+
+[node name="MiningPrompt" type="Label" parent="WorldObjects/Rock12"]
+offset_left = -35.0
+visible = false
+z_index = 2
+offset_top = -54.0
+offset_right = 35.0
+offset_bottom = -24.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 10
+text = "Iron Ore\n[E] Mine"
+horizontal_alignment = 1
 
 [node name="Sprite2D" type="Sprite2D" parent="WorldObjects/Rock12" unique_id=1703843120]
 position = Vector2(-16, -24)
@@ -1088,3 +1387,6 @@ polygon = PackedVector2Array(128, 960, 192, 912, 272, 912, 272, 928, 416, 928, 4
 
 [node name="ShipEntrance" parent="WorldObjects/LandedShip" instance=ExtResource("transition_interactable")]
 position = Vector2(0, 32)
+
+[node name="MiningOverflow" type="Node" parent="."]
+script = ExtResource("mining_overflow")

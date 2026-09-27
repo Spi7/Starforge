@@ -331,7 +331,7 @@ func test_migration(base: Dictionary) -> void:
 		await stop()
 		await start()
 		check(session.economy.credits == SessionEconomy.STARTING_CREDITS - price and session.economy.owned_storage_crates() == version, "V3 restart restores exact balance without top-up")
-		check(session.save_service.capture().save_version == 3, "Migrated schema is V3")
+		check(session.save_service.capture().save_version == SaveService.SAVE_VERSION, "Migrated schema is current")
 		await stop()
 		legacy.credits = 17
 		legacy.owned_furnishings = {"storage_crate": 2}

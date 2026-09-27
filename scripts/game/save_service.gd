@@ -4,7 +4,7 @@ extends Node
 signal status_changed(message: String)
 signal saved
 
-const SAVE_VERSION := 3
+const SAVE_VERSION := 5
 const ITEMS := [
 	preload("res://data/items/iron_ore.tres"),
 	preload("res://data/items/copper_ore.tres"),
@@ -38,6 +38,8 @@ var _pickup_remaining: Dictionary = {}
 var _furnishings: ShipFurnishings
 var _economy: SessionEconomy
 var _counter_repaired := false
+var _mining_nodes: Dictionary = {}
+var _mining_overflow: MiningOverflow
 
 @onready var timer: Timer = $AutosaveTimer
 
@@ -72,6 +74,26 @@ func bind_furnishings(furnishings: ShipFurnishings) -> void:
 func bind_economy(economy: SessionEconomy) -> void:
 	_economy = economy
 	economy.changed.connect(mark_dirty)
+
+
+func bind_mining(nodes: Array[MiningNode]) -> void:
+	for node in nodes:
+		var id := String(node.persistent_id)
+		assert(not id.is_empty() and not _mining_nodes.has(id), "Invalid mining node ID")
+		_mining_nodes[id] = node
+		node.changed.connect(mark_dirty)
+
+
+func bind_mining_overflow(overflow: MiningOverflow) -> void:
+	_mining_overflow = overflow
+	overflow.changed.connect(mark_dirty)
+
+
+func _capture_mining() -> Dictionary:
+	var state := {}
+	for id: String in _mining_nodes:
+		state[id] = _mining_nodes[id].replenishment_deadline
+	return state
 
 
 func load_game() -> String:
@@ -134,6 +156,8 @@ func capture() -> Dictionary:
 		storage_data[id] = _capture_inventory(_storages[id])
 	var snapshot := {
 		"save_version": SAVE_VERSION,
+		"mining_nodes": _capture_mining(),
+		"mining_overflow": _mining_overflow.capture() if _mining_overflow != null else {"next_id": 1, "pickups": []},
 		"credits": _economy.credits,
 		"owned_furnishings": {"storage_crate": _economy.owned_storage_crates()},
 		"current_location": current_location,
@@ -179,10 +203,30 @@ func validate(data: Variant) -> String:
 		return "Save must be an object"
 	if not _integer(data.get("save_version"), 1, 2147483647):
 		return "Invalid save version"
-	if int(data.save_version) not in [1, 2, SAVE_VERSION]:
+	if int(data.save_version) not in [1, 2, 3, 4, SAVE_VERSION]:
 		return "Unsupported save version"
 	if not data.get("current_location") is String or not LOCATIONS.has(data.current_location):
 		return "Unknown location"
+	if int(data.save_version) >= 4:
+		var mining: Variant = data.get("mining_nodes")
+		if not mining is Dictionary:
+			return "Invalid mining identities"
+		for id: Variant in mining:
+			if not id is String:
+				return "Invalid mining identity"
+			# V4 IDs described the mistakenly selected orange scenery.
+			var known: bool = id in ["mars_iron_deposit_01", "mars_iron_deposit_02", "mars_iron_deposit_03", "mars_iron_deposit_04", "mars_iron_deposit_05"] if int(data.save_version) == 4 else _mining_nodes.has(id)
+			if not known:
+				return "Invalid mining identity"
+			var deadline: Variant = mining[id]
+			if not (deadline is int or deadline is float):
+				return "Invalid mining deadline"
+			if not is_finite(float(deadline)) or deadline < 0.0 or deadline > 253402300799.0:
+				return "Invalid mining deadline"
+	if int(data.save_version) >= 5:
+		var overflow_error := MiningOverflow.validate(data.get("mining_overflow"))
+		if not overflow_error.is_empty():
+			return overflow_error
 	var economy_error := _validate_economy(data)
 	if not economy_error.is_empty():
 		return economy_error
@@ -287,6 +331,10 @@ func _apply(data: Dictionary) -> void:
 		_furnishings.next_placed_object_id = effective_next
 		_furnishings.pending_validation = true
 		_counter_repaired = effective_next != saved_next
+	for id: String in _mining_nodes:
+		_mining_nodes[id].restore(float(data.mining_nodes.get(id, 0.0)) if int(data.save_version) >= 5 else 0.0)
+	if _mining_overflow != null:
+		_mining_overflow.restore(data.mining_overflow if int(data.save_version) >= 5 else {"next_id": 1, "pickups": []})
 	_restore_inventory(_player_inventory, data.player_inventory)
 	for id: String in _storages:
 		_restore_inventory(_storages[id], data.storage_inventories[id])

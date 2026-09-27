@@ -44,6 +44,15 @@ func _ready() -> void:
 	save_service.bind_state(player.inventory, {SHIP_STORAGE_ID: storage.inventory}, pickups)
 	save_service.bind_furnishings(furnishings)
 	save_service.bind_economy(economy)
+	var overflow: MiningOverflow = mars.get_node("MiningOverflow")
+	overflow.world_objects = mars.get_node("WorldObjects")
+	var mining_nodes: Array[MiningNode] = []
+	for child in mars.get_node("WorldObjects").get_children():
+		if child is MiningNode:
+			child.overflow_store = overflow
+			mining_nodes.append(child)
+	save_service.bind_mining(mining_nodes)
+	save_service.bind_mining_overflow(overflow)
 	save_service.position_provider = _position_for_save
 	var destination := StringName(save_service.load_game())
 	location_changed.connect(_on_location_changed)
@@ -159,7 +168,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _enter_furnish_mode() -> void:
-	if transitioning or current_location != SHIP or _leaving_furnish or shop.is_open or _closing_shop:
+	if not player.controls_enabled or transitioning or current_location != SHIP or _leaving_furnish or shop.is_open or _closing_shop:
 		return
 	_lock_input()
 	furnish_mode.set_active(true)

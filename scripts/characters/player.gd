@@ -3,11 +3,14 @@ extends CharacterBody2D
 
 signal container_access_requested(container: InventoryData, title: String)
 signal inventory_feedback(message: String)
+signal mining_completed
 
 var inventory: InventoryData = InventoryData.new(20)
 var controls_enabled: bool = true
 var facing_direction: StringName = &"down"
 var _mining_animation_active: bool = false
+var _mining_controls_locked: bool = false
+var _prompt_deposit: MiningNode
 
 @export var move_speed: float = 200.0
 
@@ -19,7 +22,18 @@ func _ready() -> void:
 	animated_sprite.animation_finished.connect(_on_animation_finished)
 
 
-# Visual-only hook for a future action; movement and tool rules belong to that action.
+func begin_mining(target: Vector2) -> bool:
+	if not controls_enabled or _mining_animation_active:
+		return false
+	_update_movement_animation(target - global_position)
+	_mining_controls_locked = true
+	$InventoryUI.set_process_input(false)
+	controls_enabled = false
+	velocity = Vector2.ZERO
+	play_mining_animation()
+	return true
+
+
 func play_mining_animation() -> void:
 	_mining_animation_active = true
 	animated_sprite.stop()
@@ -30,6 +44,11 @@ func _on_animation_finished() -> void:
 	if _mining_animation_active:
 		_mining_animation_active = false
 		animated_sprite.play(StringName("idle_" + facing_direction))
+		if _mining_controls_locked:
+			mining_completed.emit()
+			_mining_controls_locked = false
+			$InventoryUI.set_process_input(true)
+			controls_enabled = true
 
 
 func _update_movement_animation(direction: Vector2) -> void:
@@ -53,19 +72,36 @@ func _unhandled_input(event: InputEvent) -> void:
 func interact_with_nearest() -> void:
 	if not controls_enabled:
 		return
-	var nearest: Interactable = null
-	var nearest_distance: float = INF
-	for area in interaction_detector.get_overlapping_areas():
-		if area is Interactable:
-			var distance: float = global_position.distance_squared_to(area.global_position)
-			if distance < nearest_distance:
-				nearest = area
-				nearest_distance = distance
+	var nearest := nearest_interactable()
 	if nearest != null:
 		nearest.interact(self)
 
 
+func nearest_interactable() -> Interactable:
+	var nearest: Interactable = null
+	var nearest_distance: float = INF
+	for area in interaction_detector.get_overlapping_areas():
+		if area is Interactable and area.collision_layer != 0:
+			var distance: float = global_position.distance_squared_to(area.global_position)
+			if distance < nearest_distance:
+				nearest = area
+				nearest_distance = distance
+	return nearest
+
+
+func _update_mining_prompt() -> void:
+	if is_instance_valid(_prompt_deposit):
+		_prompt_deposit.show_mining_prompt(false)
+	_prompt_deposit = null
+	if controls_enabled:
+		var nearest := nearest_interactable()
+		if nearest != null and nearest.get_parent() is MiningNode:
+			_prompt_deposit = nearest.get_parent()
+			_prompt_deposit.show_mining_prompt(true)
+
+
 func _physics_process(_delta: float) -> void:
+	_update_mining_prompt()
 	if not controls_enabled:
 		velocity = Vector2.ZERO
 		_update_movement_animation(Vector2.ZERO)
