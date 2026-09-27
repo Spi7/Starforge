@@ -6,6 +6,6 @@
 script = ExtResource("1")
 id = &"basic_mining_tool"
 display_name = "Basic Mining Tool"
-description = "Prototype tool. Mining is not implemented."
+description = "Required to mine mineral deposits. Keep it in your inventory."
 max_stack = 1
 category = 2
