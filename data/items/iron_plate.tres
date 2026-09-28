@@ -4,8 +4,8 @@
 
 [resource]
 script = ExtResource("1")
-id = &"iron_ore"
-display_name = "Iron Ore"
-description = "Prototype raw iron resource."
-max_stack = 100
+id = &"iron_plate"
+display_name = "Iron Plate"
+description = "A processed iron plate."
+max_stack = 99
 category = 0

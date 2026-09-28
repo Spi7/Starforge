@@ -1,0 +1,23 @@
+{
+  "native_scale": 1,
+  "target_reference_resolution": "960x540",
+  "window": "480x300",
+  "assets": [
+    "button_primary_128x32.png",
+    "button_secondary_64x32.png",
+    "button_square_32x32.png",
+    "icon_clock_32x32.png",
+    "icon_iron_ore_32x32.png",
+    "icon_iron_plate_32x32.png",
+    "icon_minus_32x32.png",
+    "icon_output_32x32.png",
+    "icon_plus_32x32.png",
+    "icon_process_arrow_32x32.png",
+    "icon_worker_32x32.png",
+    "panel_64x64.png",
+    "processor_window_480x300.png",
+    "progress_fill_256x16.png",
+    "progress_track_256x16.png",
+    "worker_slot_160x48.png"
+  ]
+}

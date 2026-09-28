@@ -1,5 +1,7 @@
 [gd_scene format=4]
 
+[ext_resource type="PackedScene" path="res://scenes/ship/ship_processor.tscn" id="processor"]
+
 [ext_resource type="Script" path="res://scripts/ship/ship_furnishings.gd" id="furnishings"]
 [ext_resource type="PackedScene" path="res://scenes/ship/furnish_mode.tscn" id="furnish_mode"]
 
@@ -297,6 +299,10 @@ position = Vector2(160, 24)
 [node name="Crate" parent="WorldObjects" instance=ExtResource("11_t0orf")]
 position = Vector2(48, 104)
 persistent_id = "starter_ship_storage_01"
+
+[node name="Processor" parent="WorldObjects" instance=ExtResource("processor")]
+position = Vector2(272, 48)
+persistent_id = "starter_ship_processor_01"
 
 [node name="PilotChair" type="StaticBody2D" parent="WorldObjects"]
 y_sort_enabled = true

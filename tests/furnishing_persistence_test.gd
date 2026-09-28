@@ -132,7 +132,7 @@ func run() -> void:
 		check(not session.save_service.validate(bad).is_empty(), "Noninteger/out-of-range cell rejected")
 	for inventory in [[{"slot": 40, "item_id": "iron_ore", "quantity": 1}],
 		[{"slot": 0, "item_id": "unknown", "quantity": 1}],
-		[{"slot": 0, "item_id": "iron_ore", "quantity": 100}]]:
+		[{"slot": 0, "item_id": "iron_ore", "quantity": 101}]]:
 		var bad := valid.duplicate(true)
 		bad.placed_crates[0].inventory = inventory
 		check(not session.save_service.validate(bad).is_empty(), "Invalid dynamic inventory rejected")

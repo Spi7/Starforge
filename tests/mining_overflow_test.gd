@@ -38,7 +38,7 @@ func run() -> void:
 			deposit.restore(0.0)
 			player.position = deposit.position + Vector2(0, 40)
 			player.inventory.add_item(TOOL, 19)
-			player.inventory.add_item(IRON, 99 - free_space)
+			player.inventory.add_item(IRON, IRON.max_stack - free_space)
 			before_iron = count_iron()
 			player.inventory.changed.connect(observe_reward, CONNECT_ONE_SHOT)
 			var calls_before := roll_calls
@@ -82,23 +82,23 @@ func run() -> void:
 	# Existing WorldPickup handles partial collection and publishes coherent state.
 	clear_inventory()
 	player.inventory.add_item(TOOL, 19)
-	player.inventory.add_item(IRON, 98)
+	player.inventory.add_item(IRON, IRON.max_stack - 1)
 	var pickup: WorldPickup = deposit.overflow_store.pickups.values()[0]
 	var original_id := pickup.persistent_id
 	player.inventory.changed.connect(func() -> void:
-		check(count_iron() == 99 and ground_quantity() == 2, "Partial collection observer sees both sides")
+		check(count_iron() == IRON.max_stack and ground_quantity() == 2, "Partial collection observer sees both sides")
 		check(session.save_service.flush(), "Partial collection saves coherently")
 	, CONNECT_ONE_SHOT)
 	pickup.get_node("Interactable").interact(player)
 	check(pickup.quantity == 2 and pickup.persistent_id == original_id, "Partial collection keeps stable pickup identity")
 	await stop_session()
 	await start_session()
-	check(ground_quantity() == 2 and count_iron() == 99, "Partial collection survives reload without duplication")
+	check(ground_quantity() == 2 and count_iron() == IRON.max_stack, "Partial collection survives reload without duplication")
 	player.inventory.slots[1].item = null
 	player.inventory.slots[1].quantity = 0
 	pickup = deposit.overflow_store.pickups.values()[0]
 	player.inventory.changed.connect(func() -> void:
-		check(count_iron() == 101 and ground_quantity() == 0, "Final collection observer sees no ground remainder")
+		check(count_iron() == IRON.max_stack + 2 and ground_quantity() == 0, "Final collection observer sees no ground remainder")
 		check(session.save_service.flush(), "Final collection saves coherently")
 	, CONNECT_ONE_SHOT)
 	pickup.get_node("Interactable").interact(player)
@@ -106,7 +106,7 @@ func run() -> void:
 	check(not is_instance_valid(pickup), "Collected pickup removed")
 	await stop_session()
 	await start_session()
-	check(ground_quantity() == 0 and count_iron() == 101, "Collected overflow does not respawn after reload")
+	check(ground_quantity() == 0 and count_iron() == IRON.max_stack + 2, "Collected overflow does not respawn after reload")
 	# V1-V4 keep inventory while retiring mistaken scenery deadlines.
 	for version in [1, 2, 3, 4]:
 		var legacy: Dictionary = session.save_service.capture()
@@ -119,7 +119,7 @@ func run() -> void:
 		file.store_string(JSON.stringify(legacy))
 		file.close()
 		await start_session()
-		check(deposit.is_available() and ground_quantity() == 0 and count_iron() == 101, "Migration preserves inventory and starts corrected rocks available")
+		check(deposit.is_available() and ground_quantity() == 0 and count_iron() == IRON.max_stack + 2, "Migration preserves inventory and starts corrected rocks available")
 	# Strict validation of the new world-state fields.
 	var valid: Dictionary = session.save_service.capture()
 	var entry := {"persistent_id": "mars_mining_overflow_1", "item_id": "iron_ore", "quantity": 3, "position": {"x": 384.0, "y": 224.0}}

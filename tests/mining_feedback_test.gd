@@ -34,7 +34,7 @@ func run() -> void:
 			check(label.global_position == initial_global, "Feedback does not follow Player")
 			player.position -= Vector2(20, 0)
 			var snapshot: Dictionary = session.save_service.capture()
-			check(snapshot.save_version == 5 and not JSON.stringify(snapshot).contains("MiningRewardFeedback"), "Feedback absent from V5 save data")
+			check(snapshot.save_version == SaveService.SAVE_VERSION and not JSON.stringify(snapshot).contains("MiningRewardFeedback"), "Feedback absent from current save data")
 			check(session.save_service.flush(), "Completed mining saves normally")
 			final_alpha = -1.0
 			label.tree_exiting.connect(func() -> void:

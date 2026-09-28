@@ -1,4 +1,6 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/ui/processing_ui.tscn" id="processing"]
 
 [ext_resource type="Script" path="res://scripts/game/game_session.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/game/save_service.gd" id="2"]
@@ -25,3 +27,5 @@ wait_time = 1.0
 [node name="FurnishingShopUI" parent="." instance=ExtResource("3")]
 
 [node name="ResourceHUD" parent="." instance=ExtResource("4")]
+
+[node name="ProcessingUI" parent="." instance=ExtResource("processing")]

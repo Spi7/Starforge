@@ -4,8 +4,9 @@ extends Node
 signal status_changed(message: String)
 signal saved
 
-const SAVE_VERSION := 5
+const SAVE_VERSION := 6
 const ITEMS := [
+	preload("res://data/items/iron_plate.tres"),
 	preload("res://data/items/iron_ore.tres"),
 	preload("res://data/items/copper_ore.tres"),
 	preload("res://data/items/nutrient_pack.tres"),
@@ -40,6 +41,14 @@ var _economy: SessionEconomy
 var _counter_repaired := false
 var _mining_nodes: Dictionary = {}
 var _mining_overflow: MiningOverflow
+var _processor: ShipProcessor
+var _processor_completed_on_load := false
+
+
+func bind_processor(processor: ShipProcessor) -> void:
+	assert(processor.persistent_id == ShipProcessor.PERSISTENT_ID)
+	_processor = processor
+	processor.changed.connect(mark_dirty)
 
 @onready var timer: Timer = $AutosaveTimer
 
@@ -129,7 +138,7 @@ func complete_location(location: String, initial: bool) -> void:
 	startup_complete = true
 	safe_to_save = true
 	if initial:
-		if _new_game or _counter_repaired:
+		if _new_game or _counter_repaired or _processor_completed_on_load:
 			mark_dirty()
 	else:
 		mark_dirty()
@@ -156,6 +165,7 @@ func capture() -> Dictionary:
 		storage_data[id] = _capture_inventory(_storages[id])
 	var snapshot := {
 		"save_version": SAVE_VERSION,
+		"processors": {ShipProcessor.PERSISTENT_ID: _processor.capture() if _processor != null else ShipProcessor.idle_snapshot()},
 		"mining_nodes": _capture_mining(),
 		"mining_overflow": _mining_overflow.capture() if _mining_overflow != null else {"next_id": 1, "pickups": []},
 		"credits": _economy.credits,
@@ -203,10 +213,14 @@ func validate(data: Variant) -> String:
 		return "Save must be an object"
 	if not _integer(data.get("save_version"), 1, 2147483647):
 		return "Invalid save version"
-	if int(data.save_version) not in [1, 2, 3, 4, SAVE_VERSION]:
+	if int(data.save_version) not in [1, 2, 3, 4, 5, SAVE_VERSION]:
 		return "Unsupported save version"
 	if not data.get("current_location") is String or not LOCATIONS.has(data.current_location):
 		return "Unknown location"
+	if int(data.save_version) >= 6:
+		var processor_error := _validate_processor(data.get("processors"))
+		if not processor_error.is_empty():
+			return processor_error
 	if int(data.save_version) >= 4:
 		var mining: Variant = data.get("mining_nodes")
 		if not mining is Dictionary:
@@ -248,6 +262,28 @@ func validate(data: Variant) -> String:
 			return "Invalid pickup quantity: " + id
 	if int(data.save_version) >= 2:
 		return _validate_crates(data)
+	return ""
+
+
+func _validate_processor(entries: Variant) -> String:
+	if not entries is Dictionary or entries.size() != 1 or not entries.has(ShipProcessor.PERSISTENT_ID):
+		return "Invalid processor identity"
+	var entry: Variant = entries[ShipProcessor.PERSISTENT_ID]
+	if not entry is Dictionary or entry.size() != 3:
+		return "Invalid processor record"
+	var remaining: Variant = entry.get("units_remaining")
+	var output: Variant = entry.get("held_output")
+	if not _integer(remaining, 0, ShipProcessor.MAX_BATCH_UNITS):
+		return "Invalid processor remaining units"
+	if not _integer(output, 0, ShipProcessor.MAX_BATCH_UNITS * ShipProcessor.OUTPUT_QUANTITY):
+		return "Invalid processor output"
+	if remaining * ShipProcessor.OUTPUT_QUANTITY + output > ShipProcessor.MAX_BATCH_UNITS * ShipProcessor.OUTPUT_QUANTITY:
+		return "Invalid processor batch capacity"
+	var deadline: Variant = entry.get("next_unit_deadline")
+	if not (deadline is int or deadline is float) or not is_finite(float(deadline)) or deadline < 0.0 or deadline > 253402300799.0:
+		return "Invalid processor deadline"
+	if (remaining > 0 and deadline == 0) or (remaining == 0 and deadline != 0):
+		return "Invalid processor timing state"
 	return ""
 
 
@@ -335,6 +371,8 @@ func _apply(data: Dictionary) -> void:
 		_mining_nodes[id].restore(float(data.mining_nodes.get(id, 0.0)) if int(data.save_version) >= 5 else 0.0)
 	if _mining_overflow != null:
 		_mining_overflow.restore(data.mining_overflow if int(data.save_version) >= 5 else {"next_id": 1, "pickups": []})
+	if _processor != null:
+		_processor_completed_on_load = _processor.restore(data.processors[ShipProcessor.PERSISTENT_ID] if int(data.save_version) >= 6 else ShipProcessor.idle_snapshot())
 	_restore_inventory(_player_inventory, data.player_inventory)
 	for id: String in _storages:
 		_restore_inventory(_storages[id], data.storage_inventories[id])

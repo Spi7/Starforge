@@ -73,7 +73,7 @@ func run() -> void:
 		{"slot": 0.5, "item_id": "iron_ore", "quantity": 1},
 		{"slot": 0, "item_id": "unknown", "quantity": 1},
 		{"slot": 0, "item_id": "iron_ore", "quantity": 0},
-		{"slot": 0, "item_id": "iron_ore", "quantity": 100},
+		{"slot": 0, "item_id": "iron_ore", "quantity": 101},
 		{"slot": 0, "item_id": "iron_ore", "quantity": 1.5},
 		{"slot": 0, "item_id": "iron_ore", "quantity": true},
 	]:

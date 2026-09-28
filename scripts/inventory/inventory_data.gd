@@ -6,6 +6,38 @@ signal changed
 var slots: Array[InventorySlot] = []
 
 
+func count_item(item: ItemDefinition) -> int:
+	var count := 0
+	for slot in slots:
+		if item != null and slot.item != null and slot.item.id == item.id:
+			count += slot.quantity
+	return count
+
+
+func remove_item(item: ItemDefinition, quantity: int) -> bool:
+	if not _remove_item(item, quantity):
+		return false
+	changed.emit()
+	return true
+
+
+# Silent mutation allows callers to publish a completed multi-object transaction.
+func _remove_item(item: ItemDefinition, quantity: int) -> bool:
+	if item == null or quantity <= 0 or count_item(item) < quantity:
+		return false
+	var remaining := quantity
+	for slot in slots:
+		if slot.item != null and slot.item.id == item.id:
+			var amount := mini(remaining, slot.quantity)
+			slot.quantity -= amount
+			remaining -= amount
+			if slot.quantity == 0:
+				slot.item = null
+			if remaining == 0:
+				break
+	return true
+
+
 func _init(capacity: int = 20) -> void:
 	for index in range(maxi(capacity, 0)):
 		slots.append(InventorySlot.new())

@@ -85,10 +85,10 @@ func run() -> void:
 	check(player.controls_enabled and not player._mining_animation_active, "Missing tool never starts action")
 	check(player.get_node("InventoryUI/Feedback").text == "Basic Mining Tool required", "Tool feedback")
 	player.inventory.add_item(TOOL, 19)
-	player.inventory.add_item(IRON, 97)
+	player.inventory.add_item(IRON, IRON.max_stack - 2)
 	interact()
 	await finish_animation()
-	check(count_iron() == 99 and not deposit.is_available(), "Partial inventory capacity accepts two and depletes")
+	check(count_iron() == IRON.max_stack and not deposit.is_available(), "Partial inventory capacity accepts two and depletes")
 	check(deposit.overflow_store.pickups.size() == 1 and deposit.overflow_store.pickups.values()[0].quantity == 1, "Remaining ore becomes one pickup")
 	deposit.overflow_store.restore({"next_id": 1, "pickups": []})
 	deposit.restore(0.0)
@@ -167,7 +167,7 @@ func run() -> void:
 		await start_session()
 		check(deposit.is_available() and count_iron() == ore_before, "Legacy starts available preserving inventory")
 	var snapshot: Dictionary = session.save_service.capture()
-	check(snapshot.save_version == 5, "V5 snapshot")
+	check(snapshot.save_version == SaveService.SAVE_VERSION, "Current-version snapshot")
 	for invalid in [null, true, "123", -1, INF, NAN, 253402300800.0]:
 		var bad := snapshot.duplicate(true)
 		bad.mining_nodes.mars_iron_deposit_01 = invalid

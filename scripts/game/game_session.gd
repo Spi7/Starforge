@@ -24,6 +24,10 @@ var _completed_position: Vector2
 var furnishings: ShipFurnishings
 var furnish_mode: Node2D
 var _leaving_furnish := false
+var processor: ShipProcessor
+var _closing_processing := false
+
+@onready var processing_ui: ProcessingUI = $ProcessingUI
 
 @onready var shop: FurnishingShopUI = $FurnishingShopUI
 @onready var save_service: SaveService = $SaveService
@@ -44,6 +48,7 @@ func _ready() -> void:
 	save_service.bind_state(player.inventory, {SHIP_STORAGE_ID: storage.inventory}, pickups)
 	save_service.bind_furnishings(furnishings)
 	save_service.bind_economy(economy)
+	save_service.bind_processor(processor)
 	var overflow: MiningOverflow = mars.get_node("MiningOverflow")
 	overflow.world_objects = mars.get_node("WorldObjects")
 	var mining_nodes: Array[MiningNode] = []
@@ -68,6 +73,9 @@ func _create_session() -> void:
 	ship = SHIP_SCENE.instantiate()
 	mars = MARS_SCENE.instantiate()
 	player = PLAYER_SCENE.instantiate()
+	processor = ship.get_node("WorldObjects/Processor")
+	processor.get_node("Interactable").interacted.connect(_open_processing)
+	processing_ui.close_requested.connect(_close_processing)
 	player.controls_enabled = false
 	player_parking.add_child(player)
 	furnishings = ship.get_node("ShipFurnishings")
@@ -96,6 +104,7 @@ func _request_transition(actor: Node, source: StringName, destination: StringNam
 
 
 func _lock_input() -> void:
+	processing_ui.close()
 	var ui := player.get_node("InventoryUI")
 	ui.close()
 	ui.set_process_input(false)
@@ -265,7 +274,32 @@ func _exit_tree() -> void:
 
 
 func _process(_delta: float) -> void:
+	# Startup restoration owns completion until dirty events can be recorded.
+	if save_service.startup_complete:
+		processor.refresh_completion()
 	shop.set_access_available(_can_open_shop())
+
+
+func _open_processing(actor: Node) -> void:
+	if actor != player or current_location != SHIP or not _can_open_shop() or _closing_processing:
+		return
+	_lock_input()
+	processor.refresh_completion()
+	processing_ui.open(processor, player.inventory)
+
+
+func _close_processing() -> void:
+	if not processing_ui.is_open or _closing_processing:
+		return
+	_closing_processing = true
+	processing_ui.close()
+	await get_tree().process_frame
+	while Input.is_action_pressed("interact") or Input.is_action_pressed("ui_cancel") or Input.is_action_pressed("inventory_toggle") or Input.is_action_pressed("furnish_toggle"):
+		await get_tree().process_frame
+	if not transitioning:
+		player.get_node("InventoryUI").set_process_input(true)
+		player.controls_enabled = true
+	_closing_processing = false
 
 
 func _can_open_shop() -> bool:

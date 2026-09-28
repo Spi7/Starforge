@@ -1,0 +1,429 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/processing_ui.gd" id="script"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/processor/processor_window_480x300.png" id="processor_window_480x300"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/processor/button_primary_128x32.png" id="button_primary_128x32"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/processor/button_secondary_64x32.png" id="button_secondary_64x32"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/processor/button_square_32x32.png" id="button_square_32x32"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/processor/icon_iron_ore_32x32.png" id="icon_iron_ore_32x32"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/processor/icon_iron_plate_32x32.png" id="icon_iron_plate_32x32"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/processor/icon_process_arrow_32x32.png" id="icon_process_arrow_32x32"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/processor/icon_plus_32x32.png" id="icon_plus_32x32"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/processor/icon_minus_32x32.png" id="icon_minus_32x32"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/processor/icon_output_32x32.png" id="icon_output_32x32"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/processor/icon_clock_32x32.png" id="icon_clock_32x32"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/processor/progress_track_256x16.png" id="progress_track_256x16"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/processor/progress_fill_256x16.png" id="progress_fill_256x16"]
+
+[sub_resource type="StyleBoxTexture" id="primary"]
+texture = ExtResource("button_primary_128x32")
+texture_margin_left = 4.0
+texture_margin_top = 4.0
+texture_margin_right = 4.0
+texture_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxTexture" id="secondary"]
+texture = ExtResource("button_secondary_64x32")
+texture_margin_left = 4.0
+texture_margin_top = 4.0
+texture_margin_right = 4.0
+texture_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxTexture" id="square"]
+texture = ExtResource("button_square_32x32")
+texture_margin_left = 4.0
+texture_margin_top = 4.0
+texture_margin_right = 4.0
+texture_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxFlat" id="Focus"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.65, 0.3, 1)
+
+[node name="ProcessingUI" type="CanvasLayer"]
+layer = 3
+script = ExtResource("script")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.02, 0.03, 0.05, 0.7)
+texture_filter = 1
+
+[node name="Center" type="CenterContainer" parent="Backdrop"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Window" type="Control" parent="Backdrop/Center"]
+custom_minimum_size = Vector2(480, 300)
+layout_mode = 2
+mouse_filter = 1
+
+
+[node name="Frame" type="TextureRect" parent="Backdrop/Center/Window"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 480.0
+offset_bottom = 300.0
+mouse_filter = 2
+texture = ExtResource("processor_window_480x300")
+
+[node name="Title" type="Label" parent="Backdrop/Center/Window"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 14.0
+offset_right = 352.0
+offset_bottom = 38.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+text = "BASIC PROCESSOR"
+
+
+[node name="Close" type="Button" parent="Backdrop/Center/Window"]
+layout_mode = 0
+offset_left = 400.0
+offset_top = 9.0
+offset_right = 464.0
+offset_bottom = 41.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_disabled_color = Color(0.5, 0.5, 0.5, 1)
+theme_override_colors/font_hover_color = Color(1, 0.7, 0.4, 1)
+theme_override_styles/normal = SubResource("secondary")
+theme_override_styles/hover = SubResource("secondary")
+theme_override_styles/pressed = SubResource("secondary")
+theme_override_styles/disabled = SubResource("secondary")
+theme_override_styles/focus = SubResource("Focus")
+text = "Close"
+
+[node name="Product" type="Label" parent="Backdrop/Center/Window"]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 64.0
+offset_right = 228.0
+offset_bottom = 84.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "IRON PLATE"
+
+
+[node name="OreIcon" type="TextureRect" parent="Backdrop/Center/Window"]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 86.0
+offset_right = 60.0
+offset_bottom = 118.0
+mouse_filter = 2
+texture = ExtResource("icon_iron_ore_32x32")
+
+[node name="Ore" type="Label" parent="Backdrop/Center/Window"]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 92.0
+offset_right = 204.0
+offset_bottom = 112.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = ""
+
+
+[node name="Arrow" type="TextureRect" parent="Backdrop/Center/Window"]
+layout_mode = 0
+offset_left = 214.0
+offset_top = 86.0
+offset_right = 246.0
+offset_bottom = 118.0
+mouse_filter = 2
+texture = ExtResource("icon_process_arrow_32x32")
+
+[node name="PlateIcon" type="TextureRect" parent="Backdrop/Center/Window"]
+layout_mode = 0
+offset_left = 268.0
+offset_top = 86.0
+offset_right = 300.0
+offset_bottom = 118.0
+mouse_filter = 2
+texture = ExtResource("icon_iron_plate_32x32")
+
+[node name="Plate" type="Label" parent="Backdrop/Center/Window"]
+layout_mode = 0
+offset_left = 304.0
+offset_top = 92.0
+offset_right = 444.0
+offset_bottom = 112.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = ""
+
+
+[node name="Available" type="Label" parent="Backdrop/Center/Window"]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 120.0
+offset_right = 448.0
+offset_bottom = 140.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 13
+text = ""
+
+
+[node name="Selection" type="Control" parent="Backdrop/Center/Window"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 154.0
+offset_right = 480.0
+offset_bottom = 230.0
+mouse_filter = 1
+
+[node name="Title" type="Label" parent="Backdrop/Center/Window/Selection"]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 4.0
+offset_right = 243.0
+offset_bottom = 24.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 12
+text = "PRODUCTION AMOUNT"
+
+
+[node name="Minus" type="Button" parent="Backdrop/Center/Window/Selection"]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 35.0
+offset_right = 60.0
+offset_bottom = 67.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_disabled_color = Color(0.5, 0.5, 0.5, 1)
+theme_override_colors/font_hover_color = Color(1, 0.7, 0.4, 1)
+theme_override_styles/normal = SubResource("square")
+theme_override_styles/hover = SubResource("square")
+theme_override_styles/pressed = SubResource("square")
+theme_override_styles/disabled = SubResource("square")
+theme_override_styles/focus = SubResource("Focus")
+text = ""
+
+[node name="Icon" type="TextureRect" parent="Backdrop/Center/Window/Selection/Minus"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 32.0
+offset_bottom = 32.0
+mouse_filter = 2
+texture = ExtResource("icon_minus_32x32")
+
+[node name="Quantity" type="Label" parent="Backdrop/Center/Window/Selection"]
+layout_mode = 0
+offset_left = 68.0
+offset_top = 40.0
+offset_right = 108.0
+offset_bottom = 60.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+text = "1"
+horizontal_alignment = 1
+
+[node name="Plus" type="Button" parent="Backdrop/Center/Window/Selection"]
+layout_mode = 0
+offset_left = 116.0
+offset_top = 35.0
+offset_right = 148.0
+offset_bottom = 67.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_disabled_color = Color(0.5, 0.5, 0.5, 1)
+theme_override_colors/font_hover_color = Color(1, 0.7, 0.4, 1)
+theme_override_styles/normal = SubResource("square")
+theme_override_styles/hover = SubResource("square")
+theme_override_styles/pressed = SubResource("square")
+theme_override_styles/disabled = SubResource("square")
+theme_override_styles/focus = SubResource("Focus")
+text = ""
+
+[node name="Icon" type="TextureRect" parent="Backdrop/Center/Window/Selection/Plus"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 32.0
+offset_bottom = 32.0
+mouse_filter = 2
+texture = ExtResource("icon_plus_32x32")
+
+[node name="Max" type="Button" parent="Backdrop/Center/Window/Selection"]
+layout_mode = 0
+offset_left = 160.0
+offset_top = 35.0
+offset_right = 224.0
+offset_bottom = 67.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_disabled_color = Color(0.5, 0.5, 0.5, 1)
+theme_override_colors/font_hover_color = Color(1, 0.7, 0.4, 1)
+theme_override_styles/normal = SubResource("secondary")
+theme_override_styles/hover = SubResource("secondary")
+theme_override_styles/pressed = SubResource("secondary")
+theme_override_styles/disabled = SubResource("secondary")
+theme_override_styles/focus = SubResource("Focus")
+text = "MAX"
+
+[node name="Required" type="Label" parent="Backdrop/Center/Window/Selection"]
+layout_mode = 0
+offset_left = 266.0
+offset_top = 5.0
+offset_right = 461.0
+offset_bottom = 25.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 13
+text = ""
+
+
+[node name="Output" type="Label" parent="Backdrop/Center/Window/Selection"]
+layout_mode = 0
+offset_left = 266.0
+offset_top = 26.0
+offset_right = 461.0
+offset_bottom = 46.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 13
+text = ""
+
+
+[node name="Clock" type="TextureRect" parent="Backdrop/Center/Window/Selection"]
+layout_mode = 0
+offset_left = 258.0
+offset_top = 43.0
+offset_right = 290.0
+offset_bottom = 75.0
+mouse_filter = 2
+texture = ExtResource("icon_clock_32x32")
+
+[node name="Time" type="Label" parent="Backdrop/Center/Window/Selection"]
+layout_mode = 0
+offset_left = 296.0
+offset_top = 49.0
+offset_right = 456.0
+offset_bottom = 69.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 13
+text = ""
+
+
+[node name="Production" type="Control" parent="Backdrop/Center/Window"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 154.0
+offset_right = 480.0
+offset_bottom = 230.0
+mouse_filter = 1
+
+[node name="Status" type="Label" parent="Backdrop/Center/Window/Production"]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 7.0
+offset_right = 268.0
+offset_bottom = 27.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = ""
+
+
+[node name="Next" type="Label" parent="Backdrop/Center/Window/Production"]
+layout_mode = 0
+offset_left = 294.0
+offset_top = 7.0
+offset_right = 462.0
+offset_bottom = 27.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 13
+text = ""
+
+
+[node name="Progress" type="TextureProgressBar" parent="Backdrop/Center/Window/Production"]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 38.0
+offset_right = 284.0
+offset_bottom = 54.0
+mouse_filter = 2
+texture_under = ExtResource("progress_track_256x16")
+texture_progress = ExtResource("progress_fill_256x16")
+step = 0.01
+
+[node name="Remaining" type="Label" parent="Backdrop/Center/Window/Production"]
+layout_mode = 0
+offset_left = 294.0
+offset_top = 36.0
+offset_right = 462.0
+offset_bottom = 56.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 13
+text = ""
+
+
+[node name="OutputIcon" type="TextureRect" parent="Backdrop/Center/Window"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 241.0
+offset_right = 56.0
+offset_bottom = 273.0
+mouse_filter = 2
+texture = ExtResource("icon_output_32x32")
+
+[node name="Completed" type="Label" parent="Backdrop/Center/Window"]
+layout_mode = 0
+offset_left = 60.0
+offset_top = 244.0
+offset_right = 270.0
+offset_bottom = 264.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 13
+text = ""
+
+
+[node name="Feedback" type="Label" parent="Backdrop/Center/Window"]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 270.0
+offset_right = 458.0
+offset_bottom = 288.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 11
+text = ""
+theme_override_colors/font_color = Color(1, 0.7, 0.4, 1)
+
+[node name="Action" type="Button" parent="Backdrop/Center/Window"]
+layout_mode = 0
+offset_left = 264.0
+offset_top = 241.0
+offset_right = 456.0
+offset_bottom = 273.0
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_disabled_color = Color(0.5, 0.5, 0.5, 1)
+theme_override_colors/font_hover_color = Color(1, 0.7, 0.4, 1)
+theme_override_styles/normal = SubResource("primary")
+theme_override_styles/hover = SubResource("primary")
+theme_override_styles/pressed = SubResource("primary")
+theme_override_styles/disabled = SubResource("primary")
+theme_override_styles/focus = SubResource("Focus")
+text = "START PROCESSING"

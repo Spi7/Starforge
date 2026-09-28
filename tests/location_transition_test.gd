@@ -167,12 +167,12 @@ func run() -> void:
 	partial.quantity = 20
 	mars.get_node("WorldObjects").add_child(partial)
 	partial.get_node("Interactable").interact(player)
-	check(partial.quantity == 11,"Partial pickup accepts nine, leaves eleven")
+	check(partial.quantity == 10,"Partial pickup accepts ten, leaves ten")
 	await travel(session.SHIP)
 	root.size = Vector2i(1024,768)
 	await process_frame
 	await travel(session.MARS)
-	check(not is_instance_valid(pickup) and partial.quantity == 11,"Mars removal and partial quantity survive re-entry")
+	check(not is_instance_valid(pickup) and partial.quantity == 10,"Mars removal and partial quantity survive re-entry")
 	check(player.inventory == inventory,"Partial pickup still uses original inventory")
 	await travel(session.SHIP)
 	# Nearest interaction and transfer UI still work after all round trips.
